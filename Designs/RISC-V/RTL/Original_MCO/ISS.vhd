@@ -6,17 +6,17 @@ use work.ISS_types.all;
 
 entity ISS_module is
 port(
-	fromMemoryPort_sig: in MEtoCU_IF;
 	fromRegsPort_sig: in RegfileType;
-	toMemoryPort_sig: out CUtoME_IF;
+	fromMemoryPort_sig: in MEtoCU_IF;
 	toRegsPort_sig: out RegfileWriteType;
+	toMemoryPort_sig: out CUtoME_IF;
 	fromMemoryPort_notify: out std_logic;
 	toMemoryPort_notify: out std_logic;
 	toRegsPort_notify: out std_logic;
 	fromMemoryPort_sync: in std_logic;
 	toMemoryPort_sync: in std_logic;
-	rst: in std_logic;
-	clk: in std_logic
+	clk: in std_logic;
+	rst: in std_logic
 );
 end ISS_module;
 
@@ -27,15 +27,25 @@ architecture ISS_arch of ISS_module is
 	signal regfileWrite: RegfileWriteType;
 	signal in_pcReg: std_logic_vector(31 downto 0);
 	signal in_regfileWrite_dst: std_logic_vector(31 downto 0);
-	signal out_regfileWrite_dstData: std_logic_vector(31 downto 0);
-	signal out_regfileWrite_dstData_vld: std_logic;
 	signal out_pcReg: std_logic_vector(31 downto 0);
 	signal out_pcReg_vld: std_logic;
 	signal out_regfileWrite_dst: std_logic_vector(31 downto 0);
 	signal out_regfileWrite_dst_vld: std_logic;
+	signal out_regfileWrite_dstData: std_logic_vector(31 downto 0);
+	signal out_regfileWrite_dstData_vld: std_logic;
 
 	-- Module Inputs
-	signal fromMemoryPort_sig_loadedData_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_21_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_22_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_23_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_24_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_25_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_26_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_27_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_28_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_29_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_30_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_31_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_01_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_02_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_03_in: std_logic_vector(31 downto 0);
@@ -56,17 +66,7 @@ architecture ISS_arch of ISS_module is
 	signal fromRegsPort_sig_reg_file_18_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_19_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_20_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_21_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_22_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_23_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_24_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_25_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_26_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_27_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_28_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_29_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_30_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_31_in: std_logic_vector(31 downto 0);
+	signal fromMemoryPort_sig_loadedData_in: std_logic_vector(31 downto 0);
 	signal active_operation_in: std_logic_vector(3 downto 0);
 
 	-- Module Outputs
@@ -89,15 +89,15 @@ architecture ISS_arch of ISS_module is
 	signal toRegsPort_notify_reg: std_logic;
 
 	-- Handshaking Protocol Signals (Communication between top and operations_inst)
-	signal idle_sig: std_logic;
 	signal done_sig: std_logic;
+	signal idle_sig: std_logic;
 	signal start_sig: std_logic;
 	signal ready_sig: std_logic;
 
 	-- Monitor Signals
-	signal active_operation: ISS_operation_t;
 	signal active_state: ISS_state_t;
 	signal next_state: ISS_state_t;
+	signal active_operation: ISS_operation_t;
 	signal wait_state: std_logic;
 
 	-- Functions
@@ -120,13 +120,23 @@ architecture ISS_arch of ISS_module is
 
 	component ISS_operations is
 	port(
-		ap_rst: in std_logic;
 		ap_clk: in std_logic;
-		ap_idle: out std_logic;
+		ap_rst: in std_logic;
 		ap_done: out std_logic;
+		ap_idle: out std_logic;
 		ap_start: in std_logic;
 		ap_ready: out std_logic;
-		fromMemoryPort_sig_loadedData_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_21_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_22_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_23_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_24_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_25_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_26_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_27_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_28_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_29_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_30_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_31_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_01_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_02_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_03_V: in std_logic_vector(31 downto 0);
@@ -147,17 +157,7 @@ architecture ISS_arch of ISS_module is
 		fromRegsPort_sig_reg_file_18_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_19_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_20_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_21_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_22_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_23_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_24_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_25_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_26_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_27_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_28_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_29_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_30_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_31_V: in std_logic_vector(31 downto 0);
+		fromMemoryPort_sig_loadedData_V: in std_logic_vector(31 downto 0);
 		toMemoryPort_sig_addrIn_V: out std_logic_vector(31 downto 0);
 		toMemoryPort_sig_addrIn_V_ap_vld: out std_logic;
 		toMemoryPort_sig_dataIn_V: out std_logic_vector(31 downto 0);
@@ -168,12 +168,12 @@ architecture ISS_arch of ISS_module is
 		toMemoryPort_sig_req_ap_vld: out std_logic;
 		in_pcReg_V: in std_logic_vector(31 downto 0);
 		in_regfileWrite_dst_V: in std_logic_vector(31 downto 0);
-		out_regfileWrite_dstData_V: out std_logic_vector(31 downto 0);
-		out_regfileWrite_dstData_V_ap_vld: out std_logic;
 		out_pcReg_V: out std_logic_vector(31 downto 0);
 		out_pcReg_V_ap_vld: out std_logic;
 		out_regfileWrite_dst_V: out std_logic_vector(31 downto 0);
 		out_regfileWrite_dst_V_ap_vld: out std_logic;
+		out_regfileWrite_dstData_V: out std_logic_vector(31 downto 0);
+		out_regfileWrite_dstData_V_ap_vld: out std_logic;
 		fromMemoryPort_notify: out std_logic;
 		fromMemoryPort_notify_ap_vld: out std_logic;
 		toMemoryPort_notify: out std_logic;
@@ -188,13 +188,23 @@ begin
 
 	operations_inst: ISS_operations
 	port map(
-		ap_rst => rst,
 		ap_clk => clk,
-		ap_idle => idle_sig,
+		ap_rst => rst,
 		ap_done => done_sig,
+		ap_idle => idle_sig,
 		ap_start => start_sig,
 		ap_ready => ready_sig,
-		fromMemoryPort_sig_loadedData_V => fromMemoryPort_sig_loadedData_in,
+		fromRegsPort_sig_reg_file_21_V => fromRegsPort_sig_reg_file_21_in,
+		fromRegsPort_sig_reg_file_22_V => fromRegsPort_sig_reg_file_22_in,
+		fromRegsPort_sig_reg_file_23_V => fromRegsPort_sig_reg_file_23_in,
+		fromRegsPort_sig_reg_file_24_V => fromRegsPort_sig_reg_file_24_in,
+		fromRegsPort_sig_reg_file_25_V => fromRegsPort_sig_reg_file_25_in,
+		fromRegsPort_sig_reg_file_26_V => fromRegsPort_sig_reg_file_26_in,
+		fromRegsPort_sig_reg_file_27_V => fromRegsPort_sig_reg_file_27_in,
+		fromRegsPort_sig_reg_file_28_V => fromRegsPort_sig_reg_file_28_in,
+		fromRegsPort_sig_reg_file_29_V => fromRegsPort_sig_reg_file_29_in,
+		fromRegsPort_sig_reg_file_30_V => fromRegsPort_sig_reg_file_30_in,
+		fromRegsPort_sig_reg_file_31_V => fromRegsPort_sig_reg_file_31_in,
 		fromRegsPort_sig_reg_file_01_V => fromRegsPort_sig_reg_file_01_in,
 		fromRegsPort_sig_reg_file_02_V => fromRegsPort_sig_reg_file_02_in,
 		fromRegsPort_sig_reg_file_03_V => fromRegsPort_sig_reg_file_03_in,
@@ -215,17 +225,7 @@ begin
 		fromRegsPort_sig_reg_file_18_V => fromRegsPort_sig_reg_file_18_in,
 		fromRegsPort_sig_reg_file_19_V => fromRegsPort_sig_reg_file_19_in,
 		fromRegsPort_sig_reg_file_20_V => fromRegsPort_sig_reg_file_20_in,
-		fromRegsPort_sig_reg_file_21_V => fromRegsPort_sig_reg_file_21_in,
-		fromRegsPort_sig_reg_file_22_V => fromRegsPort_sig_reg_file_22_in,
-		fromRegsPort_sig_reg_file_23_V => fromRegsPort_sig_reg_file_23_in,
-		fromRegsPort_sig_reg_file_24_V => fromRegsPort_sig_reg_file_24_in,
-		fromRegsPort_sig_reg_file_25_V => fromRegsPort_sig_reg_file_25_in,
-		fromRegsPort_sig_reg_file_26_V => fromRegsPort_sig_reg_file_26_in,
-		fromRegsPort_sig_reg_file_27_V => fromRegsPort_sig_reg_file_27_in,
-		fromRegsPort_sig_reg_file_28_V => fromRegsPort_sig_reg_file_28_in,
-		fromRegsPort_sig_reg_file_29_V => fromRegsPort_sig_reg_file_29_in,
-		fromRegsPort_sig_reg_file_30_V => fromRegsPort_sig_reg_file_30_in,
-		fromRegsPort_sig_reg_file_31_V => fromRegsPort_sig_reg_file_31_in,
+		fromMemoryPort_sig_loadedData_V => fromMemoryPort_sig_loadedData_in,
 		toMemoryPort_sig_addrIn_V => toMemoryPort_sig_addrIn_out,
 		toMemoryPort_sig_addrIn_V_ap_vld => toMemoryPort_sig_addrIn_vld,
 		toMemoryPort_sig_dataIn_V => toMemoryPort_sig_dataIn_out,
@@ -236,12 +236,12 @@ begin
 		toMemoryPort_sig_req_ap_vld => toMemoryPort_sig_req_vld,
 		in_pcReg_V => in_pcReg,
 		in_regfileWrite_dst_V => in_regfileWrite_dst,
-		out_regfileWrite_dstData_V => out_regfileWrite_dstData,
-		out_regfileWrite_dstData_V_ap_vld => out_regfileWrite_dstData_vld,
 		out_pcReg_V => out_pcReg,
 		out_pcReg_V_ap_vld => out_pcReg_vld,
 		out_regfileWrite_dst_V => out_regfileWrite_dst,
 		out_regfileWrite_dst_V_ap_vld => out_regfileWrite_dst_vld,
+		out_regfileWrite_dstData_V => out_regfileWrite_dstData,
+		out_regfileWrite_dstData_V_ap_vld => out_regfileWrite_dstData_vld,
 		fromMemoryPort_notify => fromMemoryPort_notify_out,
 		fromMemoryPort_notify_ap_vld  => fromMemoryPort_notify_vld,
 		toMemoryPort_notify => toMemoryPort_notify_out,
@@ -473,8 +473,18 @@ begin
 			if ((idle_sig = '1' or ready_sig = '1') and wait_state = '0') then
 				start_sig <= '1';
 				active_state <= next_state;
-				active_operation_in <= std_logic_vector(to_unsigned(ISS_operation_t'pos(active_operation), 4));
-				fromMemoryPort_sig_loadedData_in <= fromMemoryPort_sig.loadedData;
+				active_operation_in <= active_operation;
+				fromRegsPort_sig_reg_file_21_in <= fromRegsPort_sig.reg_file_21;
+				fromRegsPort_sig_reg_file_22_in <= fromRegsPort_sig.reg_file_22;
+				fromRegsPort_sig_reg_file_23_in <= fromRegsPort_sig.reg_file_23;
+				fromRegsPort_sig_reg_file_24_in <= fromRegsPort_sig.reg_file_24;
+				fromRegsPort_sig_reg_file_25_in <= fromRegsPort_sig.reg_file_25;
+				fromRegsPort_sig_reg_file_26_in <= fromRegsPort_sig.reg_file_26;
+				fromRegsPort_sig_reg_file_27_in <= fromRegsPort_sig.reg_file_27;
+				fromRegsPort_sig_reg_file_28_in <= fromRegsPort_sig.reg_file_28;
+				fromRegsPort_sig_reg_file_29_in <= fromRegsPort_sig.reg_file_29;
+				fromRegsPort_sig_reg_file_30_in <= fromRegsPort_sig.reg_file_30;
+				fromRegsPort_sig_reg_file_31_in <= fromRegsPort_sig.reg_file_31;
 				fromRegsPort_sig_reg_file_01_in <= fromRegsPort_sig.reg_file_01;
 				fromRegsPort_sig_reg_file_02_in <= fromRegsPort_sig.reg_file_02;
 				fromRegsPort_sig_reg_file_03_in <= fromRegsPort_sig.reg_file_03;
@@ -495,17 +505,7 @@ begin
 				fromRegsPort_sig_reg_file_18_in <= fromRegsPort_sig.reg_file_18;
 				fromRegsPort_sig_reg_file_19_in <= fromRegsPort_sig.reg_file_19;
 				fromRegsPort_sig_reg_file_20_in <= fromRegsPort_sig.reg_file_20;
-				fromRegsPort_sig_reg_file_21_in <= fromRegsPort_sig.reg_file_21;
-				fromRegsPort_sig_reg_file_22_in <= fromRegsPort_sig.reg_file_22;
-				fromRegsPort_sig_reg_file_23_in <= fromRegsPort_sig.reg_file_23;
-				fromRegsPort_sig_reg_file_24_in <= fromRegsPort_sig.reg_file_24;
-				fromRegsPort_sig_reg_file_25_in <= fromRegsPort_sig.reg_file_25;
-				fromRegsPort_sig_reg_file_26_in <= fromRegsPort_sig.reg_file_26;
-				fromRegsPort_sig_reg_file_27_in <= fromRegsPort_sig.reg_file_27;
-				fromRegsPort_sig_reg_file_28_in <= fromRegsPort_sig.reg_file_28;
-				fromRegsPort_sig_reg_file_29_in <= fromRegsPort_sig.reg_file_29;
-				fromRegsPort_sig_reg_file_30_in <= fromRegsPort_sig.reg_file_30;
-				fromRegsPort_sig_reg_file_31_in <= fromRegsPort_sig.reg_file_31;
+				fromMemoryPort_sig_loadedData_in <= fromMemoryPort_sig.loadedData;
 			elsif ((idle_sig = '1' or  ready_sig = '1') and wait_state = '1') then
 				start_sig <= '0';
 			end if;

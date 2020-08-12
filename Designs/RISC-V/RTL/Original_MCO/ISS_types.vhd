@@ -9,7 +9,22 @@ package ISS_types is
 	type ISS_state_t is (st_state_1, st_state_2, st_state_3, st_state_4, st_state_5, st_state_6);
 
 	-- Operations
-	type ISS_operation_t is (op_state_1_1, op_state_2_10, op_state_2_2, op_state_2_3, op_state_2_4, op_state_2_5, op_state_2_6, op_state_2_7, op_state_2_8, op_state_2_9, op_state_3_11, op_state_4_12, op_state_5_13, op_state_6_14);
+	subtype ISS_operation_t is std_logic_vector(3 downto 0);
+	constant op_state_1_1 : ISS_operation_t := "0000";
+	constant op_state_2_10 : ISS_operation_t := "0001";
+	constant op_state_2_2 : ISS_operation_t := "0010";
+	constant op_state_2_3 : ISS_operation_t := "0011";
+	constant op_state_2_4 : ISS_operation_t := "0100";
+	constant op_state_2_5 : ISS_operation_t := "0101";
+	constant op_state_2_6 : ISS_operation_t := "0110";
+	constant op_state_2_7 : ISS_operation_t := "0111";
+	constant op_state_2_8 : ISS_operation_t := "1000";
+	constant op_state_2_9 : ISS_operation_t := "1001";
+	constant op_state_3_11 : ISS_operation_t := "1010";
+	constant op_state_4_12 : ISS_operation_t := "1011";
+	constant op_state_5_13 : ISS_operation_t := "1100";
+	constant op_state_6_14 : ISS_operation_t := "1101";
+	constant op_state_wait : ISS_operation_t := "1110";
 
 	-- Enum Types
 	type ME_MaskType is (MT_B, MT_BU, MT_H, MT_HU, MT_W, MT_X);

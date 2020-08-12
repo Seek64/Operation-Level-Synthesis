@@ -6,8 +6,8 @@ use work.Framer_types.all;
 
 entity Framer_module is
 port(
-	lof_sig: in std_logic;
 	data_word_sig: in marker_t;
+	lof_sig: in std_logic;
 	oof_sig: out std_logic;
 	frame_pulse_sig: out std_logic;
 	frame_pulse_notify: out std_logic;
@@ -20,12 +20,12 @@ end Framer_module;
 architecture Framer_arch of Framer_module is
 
 	-- Internal Registers
-	signal nextphase: Phases;
 	signal frm_cnt: std_logic_vector(31 downto 0);
 	signal align: std_logic_vector(31 downto 0);
-	signal out_nextphase: std_logic_vector(2 downto 0);
+	signal nextphase: Phases;
 	signal out_frm_cnt: std_logic_vector(31 downto 0);
 	signal out_align: std_logic_vector(31 downto 0);
+	signal out_nextphase: std_logic_vector(2 downto 0);
 
 	-- Operation Module Inputs
 	signal data_word_sig_markerAlignment_in: std_logic_vector(31 downto 0);
@@ -38,8 +38,8 @@ architecture Framer_arch of Framer_module is
 
 	-- Monitor Signals
 	signal active_state: Framer_state_t;
-	signal active_operation: Framer_operation_t;
 	signal next_state: Framer_state_t;
+	signal active_operation: Framer_operation_t;
 
 	component Framer_operations is
 	port(
@@ -48,9 +48,9 @@ architecture Framer_arch of Framer_module is
 		data_word_sig_markerAlignment_V: in std_logic_vector(31 downto 0);
 		oof_sig: out std_logic;
 		frame_pulse_sig: out std_logic;
-		out_nextphase: out std_logic_vector(2 downto 0);
 		out_frm_cnt_V: out std_logic_vector(31 downto 0);
 		out_align_V: out std_logic_vector(31 downto 0);
+		out_nextphase: out std_logic_vector(2 downto 0);
 		frame_pulse_notify: out std_logic;
 		active_operation: in std_logic_vector(4 downto 0)
 	);
@@ -65,15 +65,15 @@ begin
 		data_word_sig_markerAlignment_V => data_word_sig_markerAlignment_in,
 		oof_sig => oof_sig_out,
 		frame_pulse_sig => frame_pulse_sig_out,
-		out_nextphase => out_nextphase,
 		out_frm_cnt_V => out_frm_cnt,
 		out_align_V => out_align,
+		out_nextphase => out_nextphase,
 		frame_pulse_notify => frame_pulse_notify_out,
 		active_operation => active_operation_in
 	);
 
 	-- Monitor
-	process (active_state, data_word_sync, data_word_sig.isMarker, data_word_sig.markerAlignment, nextphase, frm_cnt, align)
+	process (active_state, data_word_sync, data_word_sig.isMarker, data_word_sig.markerAlignment, frm_cnt, align, nextphase)
 	begin
 		case active_state is
 		when st_state_1 =>
@@ -169,9 +169,9 @@ begin
 	-- Operation Module Outputs
 	oof_sig <= oof_sig_out;
 	frame_pulse_sig <= frame_pulse_sig_out;
-	nextphase <= Phases'val(to_integer(unsigned(out_nextphase)));
 	frm_cnt <= out_frm_cnt;
 	align <= out_align;
+	nextphase <= Phases'val(to_integer(unsigned(out_nextphase)));
 
 	-- Output Register to Output Mapping
 
@@ -179,7 +179,7 @@ begin
 	frame_pulse_notify <= frame_pulse_notify_out;
 
 	-- Operation Module Inputs
-	active_operation_in <= std_logic_vector(to_unsigned(Framer_operation_t'pos(active_operation), 5));
+	active_operation_in <= active_operation;
 	data_word_sig_markerAlignment_in <= data_word_sig.markerAlignment;
 
 	-- Control process
