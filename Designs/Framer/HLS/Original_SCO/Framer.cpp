@@ -1,5 +1,4 @@
 #include "ap_int.h"
-#include "Framer_functions.h"
 #include "Framer_data_Types.h"
 
 void Framer_operations(
