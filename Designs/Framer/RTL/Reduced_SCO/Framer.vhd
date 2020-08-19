@@ -77,79 +77,99 @@ begin
 	begin
 		case active_state is
 		when st_state_1 =>
-			if ((data_word_sync = '1') and (frm_cnt = FRM_PULSE_POS) and (data_word_sig.isMarker = '1')) then
-				active_operation <= op_state_1_1;
-				next_state <= st_state_2;
-			elsif ((data_word_sync = '1') and (frm_cnt = FRM_PULSE_POS) and not((data_word_sig.isMarker = '1')) and (nextphase = SEARCH)) then
-				active_operation <= op_state_1_3;
-				next_state <= st_state_1;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and (data_word_sig.isMarker = '1')) then
-				active_operation <= op_state_1_5;
-				next_state <= st_state_2;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and not((data_word_sig.isMarker = '1')) and (nextphase = SEARCH)) then
-				active_operation <= op_state_1_7;
-				next_state <= st_state_1;
+
+      if (data_word_sync = '1') then
+				if (frm_cnt = FRM_PULSE_POS) then
+					if (data_word_sig.isMarker = '1') then
+						active_operation <= op_state_1_1;
+						next_state <= st_state_2;
+					else
+						active_operation <= op_state_1_3;
+						next_state <= st_state_1;
+					end if;
+			  else
+					if (data_word_sig.isMarker = '1') then
+						active_operation <= op_state_1_5;
+						next_state <= st_state_2;
+					else
+						active_operation <= op_state_1_7;
+						next_state <= st_state_1;
+					end if;
+			  end if;
 			else
 				active_operation <= op_state_1_10;
 				next_state <= st_state_1;
 			end if;
+
 		when st_state_2 =>
---				active_operation <= op_state_2_11;
---				active_operation <= op_state_2_13;
-			if ((data_word_sync = '1') and (frm_cnt = FRM_PULSE_POS) and not((((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000")) and (nextphase = FIND_SYNC)) then
-				active_operation <= op_state_2_15;
-				next_state <= st_state_2;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") and not(((data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)))) then
-				active_operation <= op_state_2_17;
-				next_state <= st_state_1;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") and (data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)) then
-				active_operation <= op_state_2_19;
-				next_state <= st_state_3;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and not((((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000")) and (nextphase = FIND_SYNC)) then
-				active_operation <= op_state_2_21;
-				next_state <= st_state_2;
+
+      if (data_word_sync = '1') then
+				if (frm_cnt = FRM_PULSE_POS) then
+					active_operation <= op_state_2_15;
+					next_state <= st_state_2;
+			  elsif (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") then
+				  if ((data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)) then
+					  active_operation <= op_state_2_19;
+					  next_state <= st_state_3;
+					else
+					  active_operation <= op_state_2_17;
+					  next_state <= st_state_1;
+					end if;
+			  else
+					  active_operation <= op_state_2_21;
+					  next_state <= st_state_2;
+			  end if;
 			else
 				active_operation <= op_state_2_24;
 				next_state <= st_state_2;
 			end if;
+
 		when st_state_3 =>
---				active_operation <= op_state_3_25;
---				active_operation <= op_state_3_27;
-			if ((data_word_sync = '1') and (frm_cnt = FRM_PULSE_POS) and not((((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000")) and (nextphase = SYNC)) then
-				active_operation <= op_state_3_29;
-				next_state <= st_state_3;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") and not(((data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)))) then
-				active_operation <= op_state_3_31;
-				next_state <= st_state_4;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") and (data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)) then
-				active_operation <= op_state_3_33;
-				next_state <= st_state_3;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and not((((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000")) and (nextphase = SYNC)) then
-				active_operation <= op_state_3_35;
-				next_state <= st_state_3;
+
+      if (data_word_sync = '1') then
+				if (frm_cnt = FRM_PULSE_POS) then
+					active_operation <= op_state_3_29;
+					next_state <= st_state_3;
+			  elsif (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") then
+				  if ((data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)) then
+					  active_operation <= op_state_3_33;
+					  next_state <= st_state_3;
+					else
+					  active_operation <= op_state_3_31;
+					  next_state <= st_state_4;
+					end if;
+			  else
+					active_operation <= op_state_3_35;
+					next_state <= st_state_3;
+			  end if;
 			else
 				active_operation <= op_state_3_38;
 				next_state <= st_state_3;
 			end if;
+
 		when st_state_4 =>
---				active_operation <= op_state_4_39;
---				active_operation <= op_state_4_41;
-			if ((data_word_sync = '1') and (frm_cnt = FRM_PULSE_POS) and not((((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000")) and (nextphase = MISS)) then 
-				active_operation <= op_state_4_43;
-				next_state <= st_state_4;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") and not(((data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)))) then
-				active_operation <= op_state_4_45;
-				next_state <= st_state_1;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") and (data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)) then
-				active_operation <= op_state_4_47;
-				next_state <= st_state_3;
-			elsif ((data_word_sync = '1') and not((frm_cnt = FRM_PULSE_POS)) and not((((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000")) and (nextphase = MISS)) then
-				active_operation <= op_state_4_49;
-				next_state <= st_state_4;
+
+      if (data_word_sync = '1') then
+				if (frm_cnt = FRM_PULSE_POS) then
+					active_operation <= op_state_4_43;
+					next_state <= st_state_4;
+			  elsif (((x"00000001" + signed(frm_cnt)) rem signed(WORDS_IN_FRAME)) = x"00000000") then
+				  if ((data_word_sig.isMarker = '1') and (align = data_word_sig.markerAlignment)) then
+						active_operation <= op_state_4_47;
+						next_state <= st_state_3;
+					else
+						active_operation <= op_state_4_45;
+						next_state <= st_state_1;
+					end if;
+			  else
+					active_operation <= op_state_4_49;
+					next_state <= st_state_4;
+			  end if;
 			else
 				active_operation <= op_state_4_52;
 				next_state <= st_state_4;
 			end if;
+			
 		end case;
 	end process;
 
