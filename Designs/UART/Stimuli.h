@@ -353,7 +353,7 @@ private:
         bus_stimuli.data = UART_ENABLE;
         bus_stimuli.trans_type = WRITE;
         bus_out->master_write(bus_stimuli);
-        std::cout << "Write " << bus_stimuli.data << " into register " << get_reg_name(bus_stimuli.addr) << std::endl;
+//        std::cout << "Write " << bus_stimuli.data << " into register " << get_reg_name(bus_stimuli.addr) << std::endl;
         assert(check_register(ADDR_ENABLE, UART_ENABLE));
     }
 
@@ -373,7 +373,7 @@ private:
             bus_stimuli.addr = ADDR_TASKS_START_TX;
             bus_stimuli.data = UART_ENABLE;
             bus_stimuli.trans_type = WRITE;
-            std::cout << "Write " << bus_stimuli.data << " into register " << get_reg_name(bus_stimuli.addr) << std::endl;
+//            std::cout << "Write " << bus_stimuli.data << " into register " << get_reg_name(bus_stimuli.addr) << std::endl;
             bus_out->master_write(bus_stimuli);
         }
         else if (ch == TASK)
@@ -539,7 +539,7 @@ private:
             trans.data |= CONFIG_ODD_PARITY_MASK;
         }
         trans.trans_type = WRITE;
-        std::cout << "Write " << trans.data << " into register " << get_reg_name(trans.addr) << std::endl;
+//        std::cout << "Write " << trans.data << " into register " << get_reg_name(trans.addr) << std::endl;
         bus_out->master_write(trans);
         this->two_stop_bits = two_stop_bits;
         this->parity        = parity;
@@ -570,7 +570,7 @@ private:
         }
 
 //        std::cout << "Stimuli check_register: Response: " << response.data << std::endl;
-        std::cout << "Read from register " << get_reg_name(addr) << " returned " << response.data << std::endl;
+//        std::cout << "Read from register " << get_reg_name(addr) << " returned " << response.data << std::endl;
         return response.data == value;
     }
 
@@ -583,44 +583,7 @@ private:
 };
 void Stimuli::stimuli_generation()
 {
-
-
-    // Disabling TX Input Stimuli
-    tx_no_stimuli();
-
-
-    std::cout << "\n-------- Testing UART TX ---------" << std::endl;
-    if (!check_register(ADDR_ENABLE, UART_ENABLE))
-    {
-        enable_uart();
-    }
-
-    start_tx(BUS);
-
-    configure_uart(ONE_STOP_BIT, PARITY_BIT, NO_HWFC, ODD_PARITY);
-
-    for (unsigned int i = 0; i <= 255; i++) {
-      tx_stimuli(i);
-    }
-
-    configure_uart(ONE_STOP_BIT, PARITY_BIT, NO_HWFC, EVEN_PARITY);
-
-    for (unsigned int i = 0; i <= 255; i++) {
-      tx_stimuli(i);
-    }
-
-    configure_uart(TWO_STOP_BITS, PARITY_BIT, NO_HWFC, ODD_PARITY);
-
-    for (unsigned int i = 0; i <= 255; i++) {
-      tx_stimuli(i);
-    }
-
-    configure_uart(ONE_STOP_BIT, NO_PARITY_BIT, NO_HWFC, ODD_PARITY);
-
-    for (unsigned int i = 0; i <= 255; i++) {
-      tx_stimuli(i);
-    }
-
+    test_tx();
     wait(1, SC_NS);
 
     sc_stop();
@@ -647,13 +610,19 @@ void Stimuli::stimuli_generation()
 
 void Stimuli::test_tx()
 {
+
     std::cout << "\n-------- Testing UART TX ---------" << std::endl;
+
+    // Reset TX Stimuli
+    tx_no_stimuli();
+
+    // Enable UART
     if (!check_register(ADDR_ENABLE, UART_ENABLE))
     {
         enable_uart();
     }
 
-    std::cout << "Stimuli: starting TX with BUS" << std::endl;
+    std::cout << "Starting TX via System Bus" << std::endl;
     start_tx(BUS);
     for (int i = 0; i < 8; i++)
     {
@@ -661,7 +630,7 @@ void Stimuli::test_tx()
         bool parity_bit    = i & 0b10;
         bool odd_parity    = i & 0b100;
         configure_uart(two_stop_bits, parity_bit, NO_HWFC, odd_parity);
-        std::cout << "TX CONFIG: two stop bits:" << two_stop_bits << ", parity: " << parity << ", odd_parity: " << odd_parity << std::endl;
+        std::cout << "TX CONFIG: two stop bits: " << two_stop_bits << ", parity: " << parity << ", odd_parity: " << odd_parity << std::endl;
 
         for (int j = 0; j < 256; j++)
         {
@@ -671,7 +640,7 @@ void Stimuli::test_tx()
     stop_tx(BUS);
 
 
-    std::cout << "Stimuli: starting TX with TASK" << std::endl;
+/*    std::cout << "Stimuli: starting TX with TASK" << std::endl;
     start_tx(TASK);
     for (int i = 0; i < 256; i++)
     {
@@ -684,7 +653,7 @@ void Stimuli::test_tx()
             start_tx(TASK);
         }
     }
-    stop_tx(TASK);
+    stop_tx(TASK);*/
 }
 
 void Stimuli::test_rx()
