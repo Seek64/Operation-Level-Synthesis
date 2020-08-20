@@ -93,10 +93,10 @@ SC_MODULE(Stimuli)
         rxd("stimuli_rxd")
     {
         SC_THREAD(stimuli_generation);
-//        SC_THREAD(tx_read);
+        SC_THREAD(tx_read);
 //        SC_THREAD(rx_write);
-//        SC_THREAD(uart_events);
-//        SC_THREAD(tx_write_sync);
+        SC_THREAD(uart_events);
+        SC_THREAD(tx_write_sync);
     }
 
     // Test cases
@@ -113,7 +113,6 @@ SC_MODULE(Stimuli)
     {
         while(1)
         {
-            std::cout << "uart_events thread iteration\n";
             bool success;
             events_in->slave_read(events_monitor,success);
             if (success)
@@ -153,7 +152,7 @@ SC_MODULE(Stimuli)
                     std::cout << "ACTIVATED" << std::endl;
                 }
             }
-            wait(1, SC_PS);
+            wait(SC_ZERO_TIME);
         }
     }
 
@@ -162,8 +161,6 @@ SC_MODULE(Stimuli)
     {
         while(1)
         {
-            std::cout << "tx_read thread iteration\n";
-
             bool tx_bit;
             txd->read(tx_bit);
             if (!tx_transmitting)
@@ -177,6 +174,8 @@ SC_MODULE(Stimuli)
                 {
                     check_print_error((tx_bit == START_BIT), "Incorrect TX start bit.");
                     tx_num_bits_received++;
+                    tx_transmitted_data = 0;
+//                    std::cout << "Start bit: " << tx_bit << std::endl;
                 }
                 else if (tx_num_bits_received <= UART_DATA_LENGTH)
                 {
@@ -185,20 +184,24 @@ SC_MODULE(Stimuli)
                         tx_transmitted_data |= (1 << (tx_num_bits_received-1));
                     }
                     tx_num_bits_received++;
+  //                  std::cout << "Data bit: " << tx_bit << std::endl;
                 }
                 else
                 {
                     // done receiving data bits
                     if (tx_num_bits_received == UART_DATA_LENGTH + 1)
                     {
+//                        std::cout << "Received data: " << tx_transmitted_data << std::endl;
                         tx_num_bits_received++;
                         if (parity)
                         {
-                            check_print_error((tx_bit == (odd_parity ? !bits_xor(tx_transmit_data) : bits_xor(tx_transmit_data))), "Incorrect TX parity.");
+                            check_print_error((tx_bit == (odd_parity ? !bits_xor(tx_transmitted_data) : bits_xor(tx_transmitted_data))), "Incorrect TX parity.");
+//                            std::cout << "Parity bit: " << tx_bit << std::endl;
                         }
                         else
                         {
                             check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
+//                            std::cout << "Stop bit: " << tx_bit << std::endl;
                             if (!two_stop_bits)
                             {
                                 tx_num_bits_received = 0;
@@ -208,6 +211,7 @@ SC_MODULE(Stimuli)
                     else if (tx_num_bits_received == UART_DATA_LENGTH + 2)
                     {
                         check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
+//                        std::cout << "Stop bit: " << tx_bit << std::endl;
                         if (parity ^ two_stop_bits)
                         {
                             tx_num_bits_received = 0;
@@ -220,6 +224,7 @@ SC_MODULE(Stimuli)
                     else
                     {
                         check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
+//                        std::cout << "Stop bit: " << tx_bit << std::endl;
                         tx_num_bits_received = 0;
                     }
                 }
@@ -233,13 +238,12 @@ SC_MODULE(Stimuli)
         bool data_out_sync_msg, data_out_sync_msg_valid;
         while(true)
         {
-            std::cout << "tx_write_sync thread iteration\n";
             tx_data_out_sync->slave_read(data_out_sync_msg, data_out_sync_msg_valid);
             if (data_out_sync_msg_valid)
             {
                 event_data_out_sync.notify();
             }
-            wait(1, SC_PS);
+            wait(SC_ZERO_TIME);
         }
     }
 
@@ -441,6 +445,19 @@ private:
 
     bool tx_stimuli(unsigned int number)
     {
+
+      data_t data_out_msg;
+      data_out_msg.valid = true;
+      data_out_msg.data = number;
+      tx_data_out->set(data_out_msg);
+
+      wait(event_data_out_sync);
+
+      tx_transmitting = true;
+      data_out_msg.valid = false;
+      tx_data_out->set(data_out_msg);
+
+/*
         data_t data_out_msg;
         data_out_msg.data = number;
         data_out_msg.valid = true;
@@ -448,6 +465,7 @@ private:
         data_out_msg.valid = false;
         sc_time start_time(sc_time_stamp());
         sc_time tx_timeout_delay(1, SC_NS);
+        wait(sc_time(1, SC_PS));
         wait(sc_time(1, SC_NS), event_data_out_sync);
         if (sc_time_stamp() - start_time == tx_timeout_delay)
         {
@@ -461,6 +479,7 @@ private:
             tx_transmitting = true;
             return true;
         }
+*/
     }
 
     void tx_no_stimuli()
@@ -520,6 +539,7 @@ private:
             trans.data |= CONFIG_ODD_PARITY_MASK;
         }
         trans.trans_type = WRITE;
+        std::cout << "Write " << trans.data << " into register " << get_reg_name(trans.addr) << std::endl;
         bus_out->master_write(trans);
         this->two_stop_bits = two_stop_bits;
         this->parity        = parity;
@@ -564,6 +584,7 @@ private:
 void Stimuli::stimuli_generation()
 {
 
+
     // Disabling TX Input Stimuli
     tx_no_stimuli();
 
@@ -576,10 +597,36 @@ void Stimuli::stimuli_generation()
 
     start_tx(BUS);
 
+    configure_uart(ONE_STOP_BIT, PARITY_BIT, NO_HWFC, ODD_PARITY);
+
+    for (unsigned int i = 0; i <= 255; i++) {
+      tx_stimuli(i);
+    }
+
+    configure_uart(ONE_STOP_BIT, PARITY_BIT, NO_HWFC, EVEN_PARITY);
+
+    for (unsigned int i = 0; i <= 255; i++) {
+      tx_stimuli(i);
+    }
+
+    configure_uart(TWO_STOP_BITS, PARITY_BIT, NO_HWFC, ODD_PARITY);
+
+    for (unsigned int i = 0; i <= 255; i++) {
+      tx_stimuli(i);
+    }
+
+    configure_uart(ONE_STOP_BIT, NO_PARITY_BIT, NO_HWFC, ODD_PARITY);
+
+    for (unsigned int i = 0; i <= 255; i++) {
+      tx_stimuli(i);
+    }
+
+    wait(1, SC_NS);
+
     sc_stop();
 
-
-  /*  tx_no_stimuli();
+/*
+    tx_no_stimuli();
 
     test_tx();
     test_rx();
@@ -594,7 +641,8 @@ void Stimuli::stimuli_generation()
     test_hwfc();
 
     std::cout << "Test finished." << std::endl;
-    sc_stop();*/
+    sc_stop();
+*/
 }
 
 void Stimuli::test_tx()
@@ -767,11 +815,12 @@ void Stimuli::test_hwfc()
 
 std::string Stimuli::get_reg_name(unsigned int addr){
   switch (addr) {
-    case    0: return "TASK_START_RX"; break;
-    case    4: return "TASK_STOP_RX";  break;
-    case    8: return "TASK_START_TX"; break;
-    case   12: return "TASK_STOP_TX";  break;
-    case 1280: return "ENABLE";        break;
-    default: return "UNKNOWN"; break;
+    case ADDR_TASKS_START_RX: return "TASK_START_RX"; break;
+    case ADDR_TASKS_STOP_RX:  return "TASK_STOP_RX";  break;
+    case ADDR_TASKS_START_TX: return "TASK_START_TX"; break;
+    case ADDR_TASKS_STOP_TX:  return "TASK_STOP_TX";  break;
+    case ADDR_ENABLE:         return "ENABLE";        break;
+    case ADDR_CONFIG:         return "CONFIG";        break;
+    default:                  return "UNKNOWN";       break;
   }
 }

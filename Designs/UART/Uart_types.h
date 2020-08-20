@@ -1,7 +1,7 @@
 #ifndef UART_TYPES_H_
 #define UART_TYPES_H_
 
-#define SIM 
+#define SIM
 
 const unsigned int ADDR_TASKS_START_RX   =  0x000;
 const unsigned int ADDR_TASKS_STOP_RX    =  0x004;
@@ -53,7 +53,7 @@ const unsigned int CONFIG_BIT_MASK        = 0x1F;
 #define EVENT                   1
 #define NO_EVENT                0
 
-#define bits(x)     ((x & 1) + ((x >> 1) & 1) + ((x >> 2) & 1) + ((x >> 3) & 1) + ((x >> 4) & 1) + ((x >> 5) & 1)+ ((x >> 6) & 1) + ((x >> 7) & 1))
+#define bits(x)     ((x & 1) + ((x >> 1) & 1) + ((x >> 2) & 1) + ((x >> 3) & 1) + ((x >> 4) & 1) + ((x >> 5) & 1) + ((x >> 6) & 1) + ((x >> 7) & 1))
 #define bits_xor(x) ((x & 1) ^ ((x >> 1) & 1) ^ ((x >> 2) & 1) ^ ((x >> 3) & 1) ^ ((x >> 4) & 1) ^ ((x >> 5) & 1) ^ ((x >> 6) & 1) ^ ((x >> 7) & 1))
 
 #ifdef SIM

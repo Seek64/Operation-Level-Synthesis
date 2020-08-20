@@ -4,33 +4,34 @@
 
 
 SC_MODULE(Uart_control) {
-    slave_in<bus_req_t>     bus_in;
-    slave_out<bus_resp_t>   bus_out;
-    slave_in<tasks_t>       tasks_in;
-    master_out<events_t>    events_out;
 
-    slave_in<bool> cts_in;
-    //shared_in<bool> cts_in;
-    //master_out<bool> rts_out;
+    // System Bus Interface
+    slave_in<bus_req_t>   bus_in;
+    slave_out<bus_resp_t> bus_out;
+
+    // PPI Bus Interface
+    slave_in<tasks_t>    tasks_in;
+    master_out<events_t> events_out;
+
+    // Hardware flow control
+    slave_in<bool>   cts_in;
     shared_out<bool> rts_out;
-    //shared_out<bool> hwfc_control_out;
 
-    // TX control and config
-    //shared_out<bool>        tx_active_out;
+    // TX Interface
     shared_out<tx_control_t> tx_control_out;
     shared_out<config_t>     tx_config_out;
-    // TX events
-    slave_in<tx_events_t>   tx_events_in;
+    slave_in<tx_events_t>    tx_events_in;
 
-    // RX control and config
-    shared_out<bool>       rx_active_out;
-#ifdef SIM
-    // DeSCAM does not allow two readers of a Shared channel.
-    // An extra port is needed for simulation, to communicate with both RX and TX
+    // RX Interface
+    shared_out<bool>       rx_active_out; //TODO: Rename to control?
     shared_out<config_t>   rx_config_out;
-#endif
-    // RX events
     slave_in<rx_events_t>  rx_events_in;
+
+
+    //shared_in<bool> cts_in;
+    //master_out<bool> rts_out;
+    //shared_out<bool> hwfc_control_out;
+
 
 
     bus_req_t           bus_in_msg;
@@ -68,7 +69,7 @@ SC_MODULE(Uart_control) {
 
     // Visible registers
     unsigned int error_src;
-    unsigned int enable;
+    unsigned int enable;            // TODO: Change to boolean?
     unsigned int frame_config;
     tasks_t      tasks;
     bool         cts_internal;
@@ -76,11 +77,6 @@ SC_MODULE(Uart_control) {
     bool         rts_internal_old;
 
     //bool enabled;
-
-#ifdef SIM
-    bool rx_active_prev;
-    bool tx_active_prev;
-#endif
 
 
     SC_CTOR(Uart_control) :
@@ -92,10 +88,6 @@ SC_MODULE(Uart_control) {
             error_src(0),
             enable(0),
             frame_config(0),
-#ifdef SIM
-            rx_active_prev(false),
-            tx_active_prev(false),
-#endif
             cts_internal(CTS_DEACTIVATED),
             rts_internal(RTS_ACTIVATED),
             bus_in("bus_in"),
@@ -165,7 +157,7 @@ void Uart_control::fsm()
     tx_control_out->set(tx_control_out_msg);
     rx_active_out->set(rx_active_out_msg);
     while (true) {
-        insert_state("conceptual_state");
+        insert_state("IDLE");
 
         // Values of variables below are not important unless there is a communication.
         // Set to default value so that they are optimized away by DeSCAM
@@ -191,15 +183,15 @@ void Uart_control::fsm()
         events_out_msg.error     = false;
         events_out_msg.rx_timeout = false;
 
-        tasks_in->slave_read(tasks_in_msg, tasks_in_valid);
-        bus_in->slave_read(bus_in_msg, bus_in_valid);
-        cts_in->slave_read(cts_in_msg, cts_in_valid);
 
+        bus_in->slave_read(bus_in_msg, bus_in_valid);
+        tasks_in->slave_read(tasks_in_msg, tasks_in_valid);
+        cts_in->slave_read(cts_in_msg, cts_in_valid);
         tx_events_in->slave_read(tx_events_msg, tx_events_valid);
         rx_events_in->slave_read(rx_events_msg, rx_events_valid);
 
-        bus_wr = bus_in_valid && bus_in_msg.trans_type == WRITE;
         bus_rd = bus_in_valid && bus_in_msg.trans_type == READ;
+        bus_wr = bus_in_valid && bus_in_msg.trans_type == WRITE;
         //bus_out_msg.valid = bus_rd || bus_wr;
         bus_out_msg.valid = bus_in_valid; // Gives better properties
 
@@ -208,12 +200,11 @@ void Uart_control::fsm()
         bus_out_msg.data = (bus_rd && bus_in_msg.addr == ADDR_ENABLE)    ? enable       : bus_out_msg.data;
         bus_out_msg.data = (bus_rd && bus_in_msg.addr == ADDR_CONFIG)    ? frame_config : bus_out_msg.data;
 
-        // BUS WRITE
+        // BUS WRITE // TODO: Use ENABLE function instead of TASK_MASK (same functionality)
         tasks.start_rx = bus_wr && (bus_in_msg.addr == ADDR_TASKS_START_RX) && TASK_MASK(bus_in_msg.data);
         tasks.stop_rx  = bus_wr && (bus_in_msg.addr == ADDR_TASKS_STOP_RX)  && TASK_MASK(bus_in_msg.data);
         tasks.start_tx = bus_wr && (bus_in_msg.addr == ADDR_TASKS_START_TX) && TASK_MASK(bus_in_msg.data);
         tasks.stop_tx  = bus_wr && (bus_in_msg.addr == ADDR_TASKS_STOP_TX)  && TASK_MASK(bus_in_msg.data);
-        // Task suspend is not included in PS for nRF53 UART
 
         // EVENTS
         // Events should be forwarded without delay. Use old ENABLE value.
@@ -242,7 +233,8 @@ void Uart_control::fsm()
         tasks.stop_tx  = tasks.stop_tx  || (tasks_in_valid && tasks_in_msg.stop_tx);
 
         tx_control_out_msg.active = ENABLE(enable) && (tasks.start_tx || (tx_control_out_msg.active && !(tasks.stop_tx)));
-        rx_active_out_msg = ENABLE(enable) && (tasks.start_rx || (rx_active_out_msg && !(tasks.stop_rx)));
+        rx_active_out_msg         = ENABLE(enable) && (tasks.start_rx || (rx_active_out_msg         && !(tasks.stop_rx)));
+
         // Update ERROR_SRC register in case of errors. New errors have priority over clearance
         error_src_tmp  = (bus_wr && (bus_in_msg.addr == ADDR_ERROR_SRC)) ? ERROR_MASK(~bus_in_msg.data & error_src) : error_src;
         error_src      = (ENABLE(enable) && rx_events_valid)             ? (error_src_tmp | rx_events_msg.error_src): error_src_tmp;
@@ -286,14 +278,14 @@ void Uart_control::fsm()
 #endif
 */
 
-        tx_control_out->set(tx_control_out_msg);
-        rx_active_out->set(rx_active_out_msg);
         bus_out->slave_write(bus_out_msg);
-        tx_config_out->set(config_msg);
         rts_out->set(rts_internal);
-#ifdef SIM
+        tx_control_out->set(tx_control_out_msg);
+        tx_config_out->set(config_msg);
+        rx_active_out->set(rx_active_out_msg);
         rx_config_out->set(config_msg);
-#endif
+
+
 
     }
 }

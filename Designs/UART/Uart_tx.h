@@ -16,7 +16,7 @@ SC_MODULE(Uart_tx)
     // Control interface
     shared_in<tx_control_t>     control_in;
     shared_in<config_t>         config_in;
-    master_out<tx_events_t>     events_out; // Event
+    master_out<tx_events_t>     events_out;
 
     // Message variables (not visible registers)
     data_t       data_in_msg;
@@ -55,6 +55,10 @@ SC_MODULE(Uart_tx)
             data_in->get(data_in_msg);
             control_in->get(control_in_msg);
 
+      //      std::cout << "data_in_msg.valid: " << data_in_msg.valid
+      //                << " control_in_msg.active: " << control_in_msg.active
+      //                << " cts: " << (control_in_msg.cts == CTS_ACTIVATED) << std::endl;
+
             //if (data_in_msg.valid && success_txd && control_in_msg.active && (control_in_msg.cts == CTS_ACTIVATED))
             if (data_in_msg.valid && control_in_msg.active && (control_in_msg.cts == CTS_ACTIVATED))
             {
@@ -63,7 +67,7 @@ SC_MODULE(Uart_tx)
                 data_in_notify->master_write(true);
                 insert_state("DATA_NOTIFY"); // Send data read event
 
-                std::cout << "###### TX: writing start bit" << std::endl;
+//                std::cout << "###### TX: writing start bit for data: " << data << std::endl;
 
                 txd->write(txd_bit,"TRANSMITTING_START");
                 // bounded for loops not yet supported in SystemC-PPA
@@ -92,13 +96,15 @@ SC_MODULE(Uart_tx)
                 if (config_in_msg.parity)
                 {
                     txd_bit = config_in_msg.odd_parity ? !get_even_parity(data) : get_even_parity(data);
+//                    std::cout << "TX - Data: " << data << " Parity: " << txd_bit << std::endl;
                     txd->write(txd_bit,"TRANSMITTING_PARITY");
                 }
                 txd_bit = STOP_BIT;
+                txd->write(txd_bit,"TRANSMITTING_STOP_FIRST");
                 config_in->get(config_in_msg);
                 if (config_in_msg.two_stop_bits)
                 {
-                    txd->write(txd_bit,"TRANSMITTING_STOP_FIRST");
+                    txd->write(txd_bit,"TRANSMITTING_STOP_SECOND");
                 }
                 events_out_msg.done = true;
                 events_out->master_write(events_out_msg); // Send DONE TRANSMITTING event
@@ -116,6 +122,7 @@ SC_MODULE(Uart_tx)
     }
 
 private:
+
     bool get_even_parity(unsigned int data) const
     {
         return bits_xor(data) == 1;
