@@ -581,31 +581,13 @@ private:
     }
 
 };
+
 void Stimuli::stimuli_generation()
 {
     test_tx();
-    wait(1, SC_NS);
 
     sc_stop();
 
-/*
-    tx_no_stimuli();
-
-    test_tx();
-    test_rx();
-    test_rx_error();
-
-    std::cout << "Stimuli: starting TX" << std::endl;
-    start_tx(BUS);
-    wait(SIM_WAIT_TIME, SC_PS);
-    std::cout << "Stimuli: suspending UART" << std::endl;
-    suspend_uart();
-    test_disabled();
-    test_hwfc();
-
-    std::cout << "Test finished." << std::endl;
-    sc_stop();
-*/
 }
 
 void Stimuli::test_tx()
@@ -622,38 +604,50 @@ void Stimuli::test_tx()
         enable_uart();
     }
 
-    std::cout << "Starting TX via System Bus" << std::endl;
+    // Test all possible configurations
+    std::cout << "Starting TX via System Bus\n";
     start_tx(BUS);
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 6; i++)
     {
         bool two_stop_bits = i & 0b1;
-        bool parity_bit    = i & 0b10;
-        bool odd_parity    = i & 0b100;
+        bool parity_bit    = (i >= 2);
+        bool odd_parity    = (i >= 4);
         configure_uart(two_stop_bits, parity_bit, NO_HWFC, odd_parity);
-        std::cout << "TX CONFIG: two stop bits: " << two_stop_bits << ", parity: " << parity << ", odd_parity: " << odd_parity << std::endl;
+        std::cout << "--- Testing TX Config: ";
+        std::cout << "Stop bits: " << two_stop_bits+1;
+        std::cout << ", Parity: " << (parity?(odd_parity?"Odd":("Even")):"None");
+        std::cout << " --- ";
 
         for (int j = 0; j < 256; j++)
         {
             tx_stimuli(j);
         }
+
+        std::cout << "Pass\n";
     }
+    std::cout << "Stopping TX via System Bus\n";
     stop_tx(BUS);
 
-
-/*    std::cout << "Stimuli: starting TX with TASK" << std::endl;
+    // Test TX Transmissions while starting and stopping it with Tasks
+    std::cout << "Starting TX with a Task\n";
     start_tx(TASK);
+    std::cout << "--- Testing TX --- ";
     for (int i = 0; i < 256; i++)
     {
-        tx_stimuli((i*17) % 256);
-        if ((i / 11) == 0)
+        tx_stimuli(i);
+        if ((i % 11) == 0)
         {
             stop_tx(TASK);
-            while(tx_transmitting) wait(1, SC_PS);
-            wait(SIM_WAIT_TIME, SC_PS); // insert random wait time
+            while(tx_transmitting) wait(SC_ZERO_TIME);
             start_tx(TASK);
         }
     }
-    stop_tx(TASK);*/
+    std::cout << "Pass\n";
+    std::cout << "Stopping TX with a Task\n";
+    stop_tx(TASK);
+
+    std::cout << "-------- Finished Testing UART TX ---------\n\n";
+
 }
 
 void Stimuli::test_rx()
