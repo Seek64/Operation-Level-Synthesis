@@ -57,7 +57,6 @@ SC_MODULE(Uart_rx)
         timeout                   = true;
         while(true)
         {
-
             rxd->try_read(rx_bit, success_rxd, "IDLE"); // Always check for new incoming rxd bits
             control_active_in->get(control_active_in_msg);
 
@@ -76,26 +75,29 @@ SC_MODULE(Uart_rx)
 
                 if (!success_rxd)
                 {
+
+                    if (!control_active_in_msg)
+                    {
+#ifdef SIM
+//                        debug_print(RX, "Waiting for TIMEOUT: " + std::to_string(suspending_count));
+#endif
+                        suspending_count = ((rx_bit == START_BIT) && !wait_framing_break) ? suspending_count + 11 : suspending_count + 1;
+                    }
+
                     if (!control_active_in_msg && suspending_count >= UART_TIMEOUT)
                     {
 #ifdef SIM
-                        debug_print(RX, "EVENT TIMEOUT");
+//                        debug_print(RX, "EVENT TIMEOUT");
 #endif
                         events_out_msg.timeout = true;
                         events_out->master_write(events_out_msg, "ERROR_TIMEOUT");
                         events_out_msg.timeout = false;
                         timeout = true;
                     }
+
                 }
                 else
                 {
-                    if (!control_active_in_msg)
-                    {
-#ifdef SIM
-                        debug_print(RX, "Waiting for TIMEOUT: " + std::to_string(suspending_count));
-#endif
-                        suspending_count = ((rx_bit == START_BIT) && !wait_framing_break) ? suspending_count + 11 : suspending_count + 1;
-                    }
 
                     // Make sure we get a STOP_BIT before continuing, in case of a break cond.
                     wait_framing_break = (rx_bit == STOP_BIT) ? false : wait_framing_break;

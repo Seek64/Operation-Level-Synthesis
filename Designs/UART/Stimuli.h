@@ -94,7 +94,7 @@ SC_MODULE(Stimuli)
     {
         SC_THREAD(stimuli_generation);
         SC_THREAD(tx_read);
-//        SC_THREAD(rx_write);
+        SC_THREAD(rx_write);
         SC_THREAD(uart_events);
         SC_THREAD(tx_write_sync);
     }
@@ -175,7 +175,6 @@ SC_MODULE(Stimuli)
                     check_print_error((tx_bit == START_BIT), "Incorrect TX start bit.");
                     tx_num_bits_received++;
                     tx_transmitted_data = 0;
-//                    std::cout << "Start bit: " << tx_bit << std::endl;
                 }
                 else if (tx_num_bits_received <= UART_DATA_LENGTH)
                 {
@@ -184,24 +183,20 @@ SC_MODULE(Stimuli)
                         tx_transmitted_data |= (1 << (tx_num_bits_received-1));
                     }
                     tx_num_bits_received++;
-  //                  std::cout << "Data bit: " << tx_bit << std::endl;
                 }
                 else
                 {
                     // done receiving data bits
                     if (tx_num_bits_received == UART_DATA_LENGTH + 1)
                     {
-//                        std::cout << "Received data: " << tx_transmitted_data << std::endl;
                         tx_num_bits_received++;
                         if (parity)
                         {
                             check_print_error((tx_bit == (odd_parity ? !bits_xor(tx_transmitted_data) : bits_xor(tx_transmitted_data))), "Incorrect TX parity.");
-//                            std::cout << "Parity bit: " << tx_bit << std::endl;
                         }
                         else
                         {
                             check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
-//                            std::cout << "Stop bit: " << tx_bit << std::endl;
                             if (!two_stop_bits)
                             {
                                 tx_num_bits_received = 0;
@@ -211,7 +206,6 @@ SC_MODULE(Stimuli)
                     else if (tx_num_bits_received == UART_DATA_LENGTH + 2)
                     {
                         check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
-//                        std::cout << "Stop bit: " << tx_bit << std::endl;
                         if (parity ^ two_stop_bits)
                         {
                             tx_num_bits_received = 0;
@@ -224,7 +218,6 @@ SC_MODULE(Stimuli)
                     else
                     {
                         check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
-//                        std::cout << "Stop bit: " << tx_bit << std::endl;
                         tx_num_bits_received = 0;
                     }
                 }
@@ -252,7 +245,6 @@ SC_MODULE(Stimuli)
     {
         while(1)
         {
-            std::cout << "rx_write thread iteration\n";
             if (rx_transmitting)
             {
                 if (!rx_num_bits_transmitted)
@@ -316,10 +308,10 @@ SC_MODULE(Stimuli)
             }
             else
             {
-                rxd->write(STOP_BIT);
+//                rxd->write(STOP_BIT);
                 rx_num_bits_transmitted = 0;
             }
-            wait(1, SC_PS);
+            wait(SC_ZERO_TIME);
         }
     }
 
@@ -504,13 +496,13 @@ private:
         rx_data_in->get(rx_data_in_msg);
         while (!rx_data_in_msg.valid)
         {
-            wait(1, SC_PS);
+            wait(SC_ZERO_TIME);
             rx_data_in->get(rx_data_in_msg);
         }
         rx_data_in_notify->set(true);
         while (rx_data_in_msg.valid)
         {
-            wait(1, SC_PS);
+            wait(SC_ZERO_TIME);
             rx_data_in->get(rx_data_in_msg);
         }
         rx_data_in_notify->set(false);
@@ -586,6 +578,8 @@ void Stimuli::stimuli_generation()
 {
     test_tx();
 
+    test_rx();
+
     sc_stop();
 
 }
@@ -652,30 +646,44 @@ void Stimuli::test_tx()
 
 void Stimuli::test_rx()
 {
-    std::cout << "\n-------- Testing UART RX ---------" << std::endl;
+    std::cout << "-------- Testing UART RX ---------\n";
+
+    // Enable UART
     if (!check_register(ADDR_ENABLE, UART_ENABLE))
     {
         enable_uart();
     }
-    std::cout << "Stimuli: starting RX with BUS" << std::endl;
+
+    // Test all possible configurations
+    std::cout << "Starting RX via System Bus\n";
     start_rx(BUS);
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 6; i++)
     {
         bool two_stop_bits = i & 0b1;
-        bool parity_bit    = i & 0b10;
-        bool odd_parity    = i & 0b100;
+        bool parity_bit    = (i >= 2);
+        bool odd_parity    = (i >= 4);
         configure_uart(two_stop_bits, parity_bit, NO_HWFC, odd_parity);
+
+        std::cout << "--- Testing RX Config: ";
+        std::cout << "Stop bits: " << two_stop_bits+1;
+        std::cout << ", Parity: " << (parity?(odd_parity?"Odd":("Even")):"None");
+        std::cout << " --- ";
 
         for (int j = 0; j < 256; j++)
         {
             rx_stimuli(j);
-            while (!rx_data_ready) wait(3, SC_PS);
+            while (!rx_data_ready) wait(SC_ZERO_TIME);
             check_print_error(read_rx(j), "RX read wrong data.");
         }
+        std::cout << "Pass\n";
     }
     stop_rx(BUS);
-    while (!rx_timeout) wait(SIM_WAIT_TIME, SC_PS);
+
+    // Wait for Timeout
+    while (!rx_timeout) wait(SC_ZERO_TIME);
     rx_timeout = false;
+
+    std::cout << "-------- Finished Testing UART RX ---------\n\n";
 }
 
 void Stimuli::test_rx_error()
