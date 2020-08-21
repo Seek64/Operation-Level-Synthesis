@@ -1,8 +1,6 @@
 #ifndef UART_TYPES_H_
 #define UART_TYPES_H_
 
-#define SIM
-
 const unsigned int ADDR_TASKS_START_RX   =  0x000;
 const unsigned int ADDR_TASKS_STOP_RX    =  0x004;
 const unsigned int ADDR_TASKS_START_TX   =  0x008;

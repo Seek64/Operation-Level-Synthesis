@@ -55,10 +55,6 @@ SC_MODULE(Uart_tx)
             data_in->get(data_in_msg);
             control_in->get(control_in_msg);
 
-      //      std::cout << "data_in_msg.valid: " << data_in_msg.valid
-      //                << " control_in_msg.active: " << control_in_msg.active
-      //                << " cts: " << (control_in_msg.cts == CTS_ACTIVATED) << std::endl;
-
             //if (data_in_msg.valid && success_txd && control_in_msg.active && (control_in_msg.cts == CTS_ACTIVATED))
             if (data_in_msg.valid && control_in_msg.active && (control_in_msg.cts == CTS_ACTIVATED))
             {
@@ -96,7 +92,6 @@ SC_MODULE(Uart_tx)
                 if (config_in_msg.parity)
                 {
                     txd_bit = config_in_msg.odd_parity ? !get_even_parity(data) : get_even_parity(data);
-//                    std::cout << "TX - Data: " << data << " Parity: " << txd_bit << std::endl;
                     txd->write(txd_bit,"TRANSMITTING_PARITY");
                 }
                 txd_bit = STOP_BIT;

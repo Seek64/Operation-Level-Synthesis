@@ -57,7 +57,8 @@ SC_MODULE(Uart_rx)
         timeout                   = true;
         while(true)
         {
-            rxd->try_read(rx_bit, success_rxd, "IDLE"); // Always check for new incoming rxd bits
+            // Always check for incoming bits
+            rxd->try_read(rx_bit, success_rxd, "IDLE");
             control_active_in->get(control_active_in_msg);
 
             if (!timeout || control_active_in_msg)

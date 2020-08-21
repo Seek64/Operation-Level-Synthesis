@@ -2,6 +2,8 @@
 #include "../Interfaces/Interfaces.h"
 #include "Uart_types.h"
 
+#define SIM
+
 #define TWO_STOP_BITS    1
 #define ONE_STOP_BIT     0
 #define PARITY_BIT       1
@@ -580,6 +582,12 @@ void Stimuli::stimuli_generation()
 
     test_rx();
 
+    test_rx_error();
+
+    //test_disabled();
+
+    //test_hwfc();
+
     sc_stop();
 
 }
@@ -688,64 +696,70 @@ void Stimuli::test_rx()
 
 void Stimuli::test_rx_error()
 {
+    std::cout << "-------- Testing RX Error Generation --------\n";
+
     sc_time start_time;
     sc_time error_delay;
-    std::cout << "\n-------- Testing RX Error Generation --------" << std::endl;
+
+    // Enable UART
     if (!check_register(ADDR_ENABLE, UART_ENABLE)) enable_uart();
 
     // Insert parity error in RX
     start_rx(BUS);
     configure_uart(ONE_STOP_BIT, PARITY_BIT, NO_HWFC, EVEN_PARITY);
-    std::cout << "INSERTING PARITY ERROR" << std::endl;
+    std::cout << "--- Testing Parity Error\n";
     insert_parity_error = true;
     rx_stimuli(0x33);
-    start_time = sc_time_stamp();
-    error_delay = sc_time(1, SC_NS);
-    wait(error_delay, event_error);
-    assert(sc_time_stamp() - start_time < error_delay);
+    wait(event_error);
+
+    // Check error flag
     assert(check_register(ADDR_ERROR_SRC, ERROR_PARITY_MASK));
 
+    // Clear error flag
     write_register(ADDR_ERROR_SRC, ERROR_PARITY_MASK);
     assert(check_register(ADDR_ERROR_SRC, 0));
-
-    while (!rx_data_ready) wait(SIM_WAIT_TIME, SC_PS);
+    while (!rx_data_ready) wait(SC_ZERO_TIME);
     assert(read_rx(0x33));
 
+    // Insert parity error in RX
     rx_stimuli(0x34);
-    start_time = sc_time_stamp();
-    error_delay = sc_time(1, SC_NS);
-    wait(error_delay, event_error);
-    assert(sc_time_stamp() - start_time < error_delay);
+    wait(event_error);
+
+    // Check error flag
     assert(check_register(ADDR_ERROR_SRC, ERROR_PARITY_MASK));
+
+    // Clear error flag
     write_register(ADDR_ERROR_SRC, ERROR_PARITY_MASK);
     assert(check_register(ADDR_ERROR_SRC, 0));
-
-    while (!rx_data_ready) wait(SIM_WAIT_TIME, SC_PS);
+    while (!rx_data_ready) wait(SC_ZERO_TIME);
     assert(read_rx(0x34));
 
+    // Reset UART and check for correct receiving
     configure_uart(TWO_STOP_BITS, NO_PARITY_BIT, HWFC, EVEN_PARITY);
-
     insert_parity_error = false;
     rx_stimuli(0xFF);
-    while (!rx_data_ready) wait(SIM_WAIT_TIME, SC_PS);
+    while (!rx_data_ready) wait(SC_ZERO_TIME);
     assert(read_rx(0xFF));
 
-
-    std::cout << "INSERTING FRAMING ERROR" << std::endl;
+    // Insert framing error
+    std::cout << "--- Testing Framing Error\n";
     insert_framing_error = true;
     rx_stimuli(0x33);
-    start_time = sc_time_stamp();
-    error_delay = sc_time(1, SC_NS);
-    wait(error_delay, event_error);
-    assert(sc_time_stamp() - start_time < error_delay);
+    wait(event_error);
     check_print_error(check_register(ADDR_ERROR_SRC, ERROR_FRAMING_MASK), "ERROR_SRC not correct");
     write_register(ADDR_ERROR_SRC, ERROR_FRAMING_MASK);
     assert(check_register(ADDR_ERROR_SRC, 0));
-    while (!rx_data_ready) wait(SIM_WAIT_TIME, SC_PS);
+    while (!rx_data_ready) wait(SC_ZERO_TIME);
     assert(read_rx(0x33));
     insert_framing_error = false;
-
     stop_rx(BUS);
+
+    // Wait for Timeout
+    while (!rx_timeout) wait(SC_ZERO_TIME);
+    rx_timeout = false;
+
+    std::cout << "-------- Finished Testing RX Error Generation ---------\n\n";
+
 }
 
 void Stimuli::test_disabled()
@@ -763,23 +777,25 @@ void Stimuli::test_disabled()
 
 void Stimuli::test_hwfc()
 {
+    std::cout << "-------- Testing Hardware Flow Control --------\n";
 
-    std::cout << "\n-------- Testing Hardware Flow Control --------" << std::endl;
+    // Enable UART
     if (!check_register(ADDR_ENABLE, UART_ENABLE)) enable_uart();
-    std::cout << "Starting TX with Hardware Flow Control enabled" << std::endl;
+
+    std::cout << "Starting TX with Hardware Flow Control enabled\n";
     configure_uart(TWO_STOP_BITS, NO_PARITY_BIT, HWFC, EVEN_PARITY);
     cts_out->master_write(CTS_ACTIVATED);
     tx_stimuli(0xCD);
-    wait(SIM_WAIT_TIME, SC_PS);
+    wait(SC_ZERO_TIME);
     std::cout << "Stopping TX with CTS" << std::endl;
     cts_out->master_write(CTS_DEACTIVATED);
-    while (tx_transmitting) wait(1, SC_PS);
+    while (tx_transmitting) wait(SC_ZERO_TIME);
     std::cout << "Give stimuli when stopped" << std::endl;
     assert(!tx_stimuli(90));
     std::cout << "Resume TX with CTS" << std::endl;
     cts_out->master_write(CTS_ACTIVATED);
     tx_stimuli(100);
-    while (tx_transmitting) wait(1, SC_PS);
+    while (tx_transmitting) wait(SC_ZERO_TIME);
     std::cout << "Suspend UART" << std::endl;
     disable_uart();
 }
