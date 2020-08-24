@@ -1,4 +1,3 @@
-
 #include "systemc.h"
 #include "../Interfaces/Interfaces.h"
 #include "Uart_types.h"
@@ -8,10 +7,10 @@ SC_MODULE(Uart_tx)
 {
     // Data bus
     shared_in<data_t> data_in;
-    master_out<bool>  data_in_notify; // Event
+    master_out<bool>  data_in_notify;
 
     // UART txd line
-    blocking_out<bool>   txd; // syncs with the baud rate clock
+    blocking_out<bool> txd;
 
     // Control interface
     shared_in<tx_control_t>     control_in;
@@ -28,9 +27,6 @@ SC_MODULE(Uart_tx)
     unsigned int data;
     bool         txd_bit; // Must be a visible register!
 
-    // Try_read/try_write success signals
-    bool success_txd;
-
     SC_CTOR(Uart_tx):
         data_in("data_in"),
         data_in_notify("data_out"),
@@ -39,8 +35,7 @@ SC_MODULE(Uart_tx)
         config_in("config_in"),
         events_out("events_out"),
         data(0),
-        txd_bit(STOP_BIT),
-        success_txd(false)
+        txd_bit(STOP_BIT)
     {
         SC_THREAD(fsm);
     }
@@ -50,28 +45,31 @@ SC_MODULE(Uart_tx)
 
         while(true)
         {
-            //txd->try_write(txd_bit, success_txd, "IDLE");
+
             insert_state("IDLE");
+
             data_in->get(data_in_msg);
             control_in->get(control_in_msg);
 
-            //if (data_in_msg.valid && success_txd && control_in_msg.active && (control_in_msg.cts == CTS_ACTIVATED))
             if (data_in_msg.valid && control_in_msg.active && (control_in_msg.cts == CTS_ACTIVATED))
             {
-                txd_bit = START_BIT;
+                // Send "data read" event
                 data = data_in_msg.data;
                 data_in_notify->master_write(true);
-                insert_state("DATA_NOTIFY"); // Send data read event
+                insert_state("DATA_NOTIFY");
 
-//                std::cout << "###### TX: writing start bit for data: " << data << std::endl;
-
+                // Send start bit
+                txd_bit = START_BIT;
                 txd->write(txd_bit,"TRANSMITTING_START");
+
                 // bounded for loops not yet supported in SystemC-PPA
                 // for (unsigned int i = 0; i < 8; i++)
                 // {
                 //     txd_bit = get_data_bit(data, i);
                 //     txd->write(txd_bit,"TRANSMITTING_DATA");
                 // }
+
+                // Send data bits
                 txd_bit = get_data_bit(data, 0);
                 txd->write(txd_bit,"TRANSMITTING_DATA_ZERO");
                 txd_bit = get_data_bit(data, 1);
@@ -88,12 +86,16 @@ SC_MODULE(Uart_tx)
                 txd->write(txd_bit,"TRANSMITTING_DATA_SIX");
                 txd_bit = get_data_bit(data, 7);
                 txd->write(txd_bit,"TRANSMITTING_DATA_SEVEN");
+
+                // Send parity bit
                 config_in->get(config_in_msg);
                 if (config_in_msg.parity)
                 {
                     txd_bit = config_in_msg.odd_parity ? !get_even_parity(data) : get_even_parity(data);
                     txd->write(txd_bit,"TRANSMITTING_PARITY");
                 }
+
+                // Send stop bits
                 txd_bit = STOP_BIT;
                 txd->write(txd_bit,"TRANSMITTING_STOP_FIRST");
                 config_in->get(config_in_msg);
@@ -101,11 +103,13 @@ SC_MODULE(Uart_tx)
                 {
                     txd->write(txd_bit,"TRANSMITTING_STOP_SECOND");
                 }
-                events_out_msg.done = true;
-                events_out->master_write(events_out_msg); // Send DONE TRANSMITTING event
-                events_out_msg.done = false;
 
+                // Send "done transmitting" event
+                events_out_msg.done = true;
+                events_out->master_write(events_out_msg);
+                events_out_msg.done = false;
                 insert_state("STOP_NOTIFY");
+
             }
             else if (!control_in_msg.active)
             {
