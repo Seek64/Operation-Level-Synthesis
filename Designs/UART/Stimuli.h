@@ -33,41 +33,6 @@ SC_MODULE(Stimuli)
     master_out<bool>      cts_out;
     shared_in<bool>       rts_in;
 
-    bus_req_t  bus_stimuli;
-    tasks_t    task_stimuli;
-    events_t   events_monitor;
-
-    bool txd_bit;
-    bool rts_monitor;
-    bool prev_rts_monitor;
-
-    bool parity;
-    bool two_stop_bits;
-    bool hwfc;
-    bool odd_parity;
-
-    bool tx_transmitting;
-    bool rx_data_ready;
-    bool rx_timeout;
-    bool rx_transmitting;
-
-    sc_event event_error;
-    sc_event rts_activated;
-    sc_event rts_deactivated;
-    sc_event event_data_out_sync;
-
-    bool insert_parity_error;
-    bool insert_overrun_error;
-    bool insert_break_error;
-    bool insert_framing_error;
-    unsigned int rx_transmit_data;
-    unsigned int tx_transmit_data;
-    unsigned int tx_transmitted_data;
-    unsigned int tx_num_bits_received;
-    unsigned int rx_num_bits_transmitted;
-
-    void stimuli_generation();
-
     SC_CTOR(Stimuli):
         tx_transmitting(false),
         rts_monitor(RTS_DEACTIVATED),
@@ -75,12 +40,11 @@ SC_MODULE(Stimuli)
         rx_timeout(false),
         rx_transmitting(false),
         insert_parity_error(false),
-        insert_break_error(false),
+  //      insert_break_error(false),
         insert_framing_error(false),
-        insert_overrun_error(false),
+  //      insert_overrun_error(false),
         tx_num_bits_received(0),
         tx_transmit_data(0),
-        tx_transmitted_data(0),
         rx_transmit_data(0),
         rx_num_bits_transmitted(0),
         bus_out("stimuli_bus_out"),
@@ -101,6 +65,49 @@ SC_MODULE(Stimuli)
         SC_THREAD(tx_write_sync);
     }
 
+
+
+private:
+
+    bus_req_t  bus_stimuli;
+    events_t   events_monitor;
+
+    bool rts_monitor;
+    bool prev_rts_monitor;
+
+    // Configuration Variables
+    bool parity;
+    bool two_stop_bits;
+    bool hwfc;
+    bool odd_parity;
+    bool insert_parity_error;
+//  bool insert_overrun_error;
+//  bool insert_break_error;
+    bool insert_framing_error;
+
+    // Status Variables
+    bool tx_transmitting;
+    bool rx_data_ready;
+    bool rx_timeout;
+    bool rx_transmitting;
+    unsigned int rx_transmit_data;
+    unsigned int tx_transmit_data;
+    unsigned int tx_num_bits_received;
+    unsigned int rx_num_bits_transmitted;
+
+    // Events
+    sc_event event_error;
+    sc_event rts_activated;
+    sc_event rts_deactivated;
+    sc_event event_data_out_sync;
+
+    // Threads
+    void stimuli_generation();
+    void uart_events();
+    void tx_read();
+    void tx_write_sync();
+    void rx_write();
+
     // Test cases
     void test_tx();
     void test_rx();
@@ -108,476 +115,473 @@ SC_MODULE(Stimuli)
     void test_hwfc();
     void test_disabled();
 
+    // Utility
+    void check_print_error(bool expr, const std::string& msg);
+    void enable_uart();
+    void disable_uart();
+    void start_tx(task_channel_t ch);
+    void start_rx(task_channel_t ch);
+    void stop_tx(task_channel_t ch);
+    void stop_rx(task_channel_t ch);
+    bool tx_stimuli(unsigned int number);
+    void tx_no_stimuli();
+    void rx_stimuli(int data);
+    bool read_rx(unsigned int data);
+    void configure_uart(int two_stop_bits, int parity, int hwfc, int odd_parity);
+    void write_register(unsigned int addr, int value);
+    bool check_register(int addr, int value);
+    void suspend_uart();
     std::string get_reg_name(unsigned int addr);
 
-    // Monitor for UART events
-    void uart_events()
-    {
-        while(1)
-        {
-            bool success;
-            events_in->slave_read(events_monitor,success);
-            if (success)
-            {
-                if (events_monitor.txd_ready)
-                {
-                    tx_transmitting = false;
-                }
-                if (events_monitor.rxd_ready)
-                {
-                    rx_data_ready = true;
-                }
-                if (events_monitor.rx_timeout)
-                {
-                    rx_timeout = true;
-                    std::cout << "EVENT_MONITOR: RX timeout" << std::endl;
-                }
-                if (events_monitor.error)
-                {
-                    std::cout << "EVENT_MONITOR: error event" << std::endl;
-                    event_error.notify();
-                }
-            }
-            prev_rts_monitor = rts_monitor;
-            rts_in->get(rts_monitor);
-            if (rts_monitor != prev_rts_monitor)
-            {
-                std::cout << "EVENT_MONITOR: rts ";
-                if (rts_monitor == RTS_DEACTIVATED)
-                {
-                    rts_deactivated.notify();
-                    std::cout << "DEACTIVATED" << std::endl;
-                }
-                else
-                {
-                    rts_activated.notify();
-                    std::cout << "ACTIVATED" << std::endl;
-                }
-            }
-            wait(SC_ZERO_TIME);
-        }
-    }
+};
 
-    // Thread for monitoring txd
-    void tx_read()
+
+
+// Monitor thread for UART events
+void Stimuli::uart_events()
+{
+    while(1)
     {
-        while(1)
+        bool success;
+        events_in->slave_read(events_monitor,success);
+        if (success)
         {
-            bool tx_bit;
-            txd->read(tx_bit);
-            if (!tx_transmitting)
+            if (events_monitor.txd_ready)
             {
-                check_print_error((tx_bit == STOP_BIT), "TX did not send stop bit when not transmitting.");
-                tx_num_bits_received = 0;
+                tx_transmitting = false;
+            }
+            if (events_monitor.rxd_ready)
+            {
+                rx_data_ready = true;
+            }
+            if (events_monitor.rx_timeout)
+            {
+                rx_timeout = true;
+                std::cout << "EVENT_MONITOR: RX timeout" << std::endl;
+            }
+            if (events_monitor.error)
+            {
+                std::cout << "EVENT_MONITOR: error event" << std::endl;
+                event_error.notify();
+            }
+        }
+        prev_rts_monitor = rts_monitor;
+        rts_in->get(rts_monitor);
+        if (rts_monitor != prev_rts_monitor)
+        {
+            std::cout << "EVENT_MONITOR: rts ";
+            if (rts_monitor == RTS_DEACTIVATED)
+            {
+                rts_deactivated.notify();
+                std::cout << "DEACTIVATED" << std::endl;
             }
             else
             {
-                if (!tx_num_bits_received)
+                rts_activated.notify();
+                std::cout << "ACTIVATED" << std::endl;
+            }
+        }
+        wait(SC_ZERO_TIME);
+    }
+}
+
+// Thread for monitoring txd
+void Stimuli::tx_read()
+{
+    while(1)
+    {
+        bool tx_bit;
+        txd->read(tx_bit);
+        if (!tx_transmitting)
+        {
+            check_print_error((tx_bit == STOP_BIT), "TX did not send stop bit when not transmitting.");
+            tx_num_bits_received = 0;
+        }
+        else
+        {
+            if (!tx_num_bits_received)
+            {
+                check_print_error((tx_bit == START_BIT), "Incorrect TX start bit.");
+                tx_num_bits_received++;
+                tx_transmit_data = 0;
+            }
+            else if (tx_num_bits_received <= UART_DATA_LENGTH)
+            {
+                if (tx_bit)
                 {
-                    check_print_error((tx_bit == START_BIT), "Incorrect TX start bit.");
-                    tx_num_bits_received++;
-                    tx_transmitted_data = 0;
+                    tx_transmit_data |= (1 << (tx_num_bits_received-1));
                 }
-                else if (tx_num_bits_received <= UART_DATA_LENGTH)
+                tx_num_bits_received++;
+            }
+            else
+            {
+                // done receiving data bits
+                if (tx_num_bits_received == UART_DATA_LENGTH + 1)
                 {
-                    if (tx_bit)
-                    {
-                        tx_transmitted_data |= (1 << (tx_num_bits_received-1));
-                    }
                     tx_num_bits_received++;
-                }
-                else
-                {
-                    // done receiving data bits
-                    if (tx_num_bits_received == UART_DATA_LENGTH + 1)
+                    if (parity)
                     {
-                        tx_num_bits_received++;
-                        if (parity)
-                        {
-                            check_print_error((tx_bit == (odd_parity ? !bits_xor(tx_transmitted_data) : bits_xor(tx_transmitted_data))), "Incorrect TX parity.");
-                        }
-                        else
-                        {
-                            check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
-                            if (!two_stop_bits)
-                            {
-                                tx_num_bits_received = 0;
-                            }
-                        }
+                        check_print_error((tx_bit == (odd_parity ? !bits_xor(tx_transmit_data) : bits_xor(tx_transmit_data))), "Incorrect TX parity.");
                     }
-                    else if (tx_num_bits_received == UART_DATA_LENGTH + 2)
+                    else
                     {
                         check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
-                        if (parity ^ two_stop_bits)
+                        if (!two_stop_bits)
                         {
                             tx_num_bits_received = 0;
                         }
-                        else if (parity && two_stop_bits)
-                        {
-                            tx_num_bits_received++;
-                        }
                     }
-                    else
+                }
+                else if (tx_num_bits_received == UART_DATA_LENGTH + 2)
+                {
+                    check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
+                    if (parity ^ two_stop_bits)
                     {
-                        check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
                         tx_num_bits_received = 0;
                     }
+                    else if (parity && two_stop_bits)
+                    {
+                        tx_num_bits_received++;
+                    }
                 }
-            }
-        }
-    }
-
-    // Thread for data_in synchronization
-    void tx_write_sync()
-    {
-        bool data_out_sync_msg, data_out_sync_msg_valid;
-        while(true)
-        {
-            tx_data_out_sync->slave_read(data_out_sync_msg, data_out_sync_msg_valid);
-            if (data_out_sync_msg_valid)
-            {
-                event_data_out_sync.notify();
-            }
-            wait(SC_ZERO_TIME);
-        }
-    }
-
-    // Thread for generating rxd stimuli
-    void rx_write()
-    {
-        while(1)
-        {
-            if (rx_transmitting)
-            {
-                if (!rx_num_bits_transmitted)
+                else
                 {
-                    // We have not yet started the transmission
-                    rxd->write(START_BIT);
-                    rx_num_bits_transmitted++;
+                    check_print_error((tx_bit == STOP_BIT), "Incorrect TX stop bit.");
+                    tx_num_bits_received = 0;
                 }
-                else if (rx_num_bits_transmitted <= UART_DATA_LENGTH)
+            }
+        }
+    }
+}
+
+// Thread for data_in synchronization
+void Stimuli::tx_write_sync()
+{
+    bool data_out_sync_msg, data_out_sync_msg_valid;
+    while(true)
+    {
+        tx_data_out_sync->slave_read(data_out_sync_msg, data_out_sync_msg_valid);
+        if (data_out_sync_msg_valid)
+        {
+            event_data_out_sync.notify();
+        }
+        wait(SC_ZERO_TIME);
+    }
+}
+
+// Thread for generating rxd stimuli
+void Stimuli::rx_write()
+{
+    while(1)
+    {
+        if (rx_transmitting)
+        {
+            if (!rx_num_bits_transmitted)
+            {
+                // We have not yet started the transmission
+                rxd->write(START_BIT);
+                rx_num_bits_transmitted++;
+            }
+            else if (rx_num_bits_transmitted <= UART_DATA_LENGTH)
+            {
+                bool next_bit;
+                next_bit = rx_transmit_data & (1 << (rx_num_bits_transmitted-1));
+                rxd->write(next_bit);
+                rx_num_bits_transmitted++;
+            }
+            else if (rx_num_bits_transmitted == UART_DATA_LENGTH + 1)
+            {
+                if (parity)
                 {
                     bool next_bit;
-                    next_bit = rx_transmit_data & (1 << (rx_num_bits_transmitted-1));
+                    next_bit = insert_parity_error ? !bits_xor(rx_transmit_data) : bits_xor(rx_transmit_data);
+                    next_bit = (odd_parity ? !next_bit : next_bit);
                     rxd->write(next_bit);
                     rx_num_bits_transmitted++;
+                    if (insert_parity_error) std::cout << "Inserted parity error" << std::endl;
                 }
-                else if (rx_num_bits_transmitted == UART_DATA_LENGTH + 1)
+                else
                 {
-                    if (parity)
+                    if (insert_framing_error) rxd->write(START_BIT);
+                    else rxd->write(STOP_BIT);
+                    if (two_stop_bits)
                     {
-                        bool next_bit;
-                        next_bit = insert_parity_error ? !bits_xor(rx_transmit_data) : bits_xor(rx_transmit_data);
-                        next_bit = (odd_parity ? !next_bit : next_bit);
-                        rxd->write(next_bit);
                         rx_num_bits_transmitted++;
-                        if (insert_parity_error) std::cout << "Inserted parity error" << std::endl;
                     }
                     else
-                    {
-                        if (insert_framing_error) rxd->write(START_BIT);
-                        else rxd->write(STOP_BIT);
-                        if (two_stop_bits)
-                        {
-                            rx_num_bits_transmitted++;
-                        }
-                        else
-                        {
-                            rx_num_bits_transmitted = 0;
-                            rx_transmitting = false;
-                        }
-                    }
-                }
-                else if (rx_num_bits_transmitted == UART_DATA_LENGTH + 2)
-                {
-                    rxd->write(STOP_BIT);
-                    if (parity ^ two_stop_bits)
                     {
                         rx_num_bits_transmitted = 0;
                         rx_transmitting = false;
                     }
-                    else if (parity && two_stop_bits)
-                    {
-                        rx_num_bits_transmitted++;
-                    }
                 }
-                else
+            }
+            else if (rx_num_bits_transmitted == UART_DATA_LENGTH + 2)
+            {
+                rxd->write(STOP_BIT);
+                if (parity ^ two_stop_bits)
                 {
-                    rxd->write(STOP_BIT);
                     rx_num_bits_transmitted = 0;
                     rx_transmitting = false;
+                }
+                else if (parity && two_stop_bits)
+                {
+                    rx_num_bits_transmitted++;
                 }
             }
             else
             {
-//                rxd->write(STOP_BIT);
+                rxd->write(STOP_BIT);
                 rx_num_bits_transmitted = 0;
+                rx_transmitting = false;
             }
-            wait(SC_ZERO_TIME);
-        }
-    }
-
-private:
-
-    void check_print_error(bool expr, const std::string& msg)
-    {
-        if (!expr)
-        {
-            std::cout << "ERROR: " << msg << std::endl;
-            std::cout << "UART status:" << std::endl;
-            std::cout << "    CONFIG:" << std::endl;
-            std::cout << "      TWO_STOP_BITS " << (two_stop_bits ? "true" : "false") << std::endl;
-            std::cout << "      PARITY "        << (parity ? "true" : "false")        << std::endl;
-            std::cout << "      ODD PARITY "    << (odd_parity ? "true" : "false")    << std::endl;
-            std::cout << "      HWFC "          << (hwfc ? "true" : "false")          << std::endl;
-            std::cout << "    RX ";
-            if (!rx_transmitting) std::cout << "not transmitting. Last transmitted ";
-            std::cout << "data: " << rx_transmit_data << std::endl;
-            std::cout << "    TX ";
-            if (!tx_transmitting) std::cout << "not transmitting. Last transmitted ";
-            std::cout << "data: " << tx_transmit_data << std::endl;
-
-            sc_stop();
-        }
-    }
-
-    void enable_uart()
-    {
-        bus_stimuli.addr = ADDR_ENABLE;
-        bus_stimuli.data = UART_ENABLE;
-        bus_stimuli.trans_type = WRITE;
-        bus_out->master_write(bus_stimuli);
-//        std::cout << "Write " << bus_stimuli.data << " into register " << get_reg_name(bus_stimuli.addr) << std::endl;
-        assert(check_register(ADDR_ENABLE, UART_ENABLE));
-    }
-
-    void disable_uart()
-    {
-        bus_stimuli.addr = ADDR_ENABLE;
-        bus_stimuli.data = UART_DISABLE;
-        bus_stimuli.trans_type = WRITE;
-        bus_out->master_write(bus_stimuli);
-        assert(check_register(ADDR_ENABLE, UART_DISABLE));
-    }
-
-    void start_tx(task_channel_t ch)
-    {
-        if (ch == BUS)
-        {
-            bus_stimuli.addr = ADDR_TASKS_START_TX;
-            bus_stimuli.data = UART_ENABLE;
-            bus_stimuli.trans_type = WRITE;
-//            std::cout << "Write " << bus_stimuli.data << " into register " << get_reg_name(bus_stimuli.addr) << std::endl;
-            bus_out->master_write(bus_stimuli);
-        }
-        else if (ch == TASK)
-        {
-            tasks_t tasks { start_rx: NO_EVENT,
-                            stop_rx : NO_EVENT,
-                            start_tx: EVENT,
-                            stop_tx : NO_EVENT};
-            tasks_out->master_write(tasks);
-        }
-    }
-    void start_rx(task_channel_t ch)
-    {
-        if (ch == BUS)
-        {
-            bus_stimuli.addr = ADDR_TASKS_START_RX;
-            bus_stimuli.data = UART_ENABLE;
-            bus_stimuli.trans_type = WRITE;
-            bus_out->master_write(bus_stimuli);
-        }
-        else if (ch == TASK)
-        {
-            tasks_t tasks { start_rx: EVENT,
-                            stop_rx : NO_EVENT,
-                            start_tx: NO_EVENT,
-                            stop_tx : NO_EVENT};
-            tasks_out->master_write(tasks);
-        }
-
-
-    }
-    void stop_tx(task_channel_t ch)
-    {
-        if (ch == BUS)
-        {
-            bus_stimuli.addr = ADDR_TASKS_STOP_TX;
-            bus_stimuli.data = UART_ENABLE;
-            bus_stimuli.trans_type = WRITE;
-            bus_out->master_write(bus_stimuli);
-        }
-        else if (ch == TASK)
-        {
-            tasks_t tasks { start_rx: NO_EVENT,
-                            stop_rx : NO_EVENT,
-                            start_tx: NO_EVENT,
-                            stop_tx : EVENT};
-            tasks_out->master_write(tasks);
-        }
-
-    }
-    void stop_rx(task_channel_t ch)
-    {
-        if (ch == BUS)
-        {
-            bus_stimuli.addr = ADDR_TASKS_STOP_RX;
-            bus_stimuli.data = UART_ENABLE;
-            bus_stimuli.trans_type = WRITE;
-            bus_out->master_write(bus_stimuli);
-        }
-        else if (ch == TASK)
-        {
-            tasks_t tasks { start_rx: NO_EVENT,
-                            stop_rx : EVENT,
-                            start_tx: NO_EVENT,
-                            stop_tx : NO_EVENT};
-            tasks_out->master_write(tasks);
-        }
-    }
-
-    bool tx_stimuli(unsigned int number)
-    {
-
-      data_t data_out_msg;
-      data_out_msg.valid = true;
-      data_out_msg.data = number;
-      tx_data_out->set(data_out_msg);
-
-      wait(event_data_out_sync);
-
-      tx_transmitting = true;
-      data_out_msg.valid = false;
-      tx_data_out->set(data_out_msg);
-
-/*
-        data_t data_out_msg;
-        data_out_msg.data = number;
-        data_out_msg.valid = true;
-        tx_data_out->set(data_out_msg);
-        data_out_msg.valid = false;
-        sc_time start_time(sc_time_stamp());
-        sc_time tx_timeout_delay(1, SC_NS);
-        wait(sc_time(1, SC_PS));
-        wait(sc_time(1, SC_NS), event_data_out_sync);
-        if (sc_time_stamp() - start_time == tx_timeout_delay)
-        {
-            std::cout << "Stimuli func::tx_stimuli timed out after 1 ns." << std::endl;
-            return false;
         }
         else
         {
-            tx_data_out->set(data_out_msg);
-            tx_transmit_data = number;
-            tx_transmitting = true;
-            return true;
+//                rxd->write(STOP_BIT);
+            rx_num_bits_transmitted = 0;
         }
-*/
+        wait(SC_ZERO_TIME);
     }
+}
 
-    void tx_no_stimuli()
+void Stimuli::check_print_error(bool expr, const std::string& msg)
+{
+    if (!expr)
     {
-        data_t data_out_msg;
-        data_out_msg.valid = false;
-        tx_data_out->set(data_out_msg);
+        std::cout << "ERROR: " << msg << std::endl;
+        std::cout << "UART status:" << std::endl;
+        std::cout << "    CONFIG:" << std::endl;
+        std::cout << "      TWO_STOP_BITS " << (two_stop_bits ? "true" : "false") << std::endl;
+        std::cout << "      PARITY "        << (parity ? "true" : "false")        << std::endl;
+        std::cout << "      ODD PARITY "    << (odd_parity ? "true" : "false")    << std::endl;
+        std::cout << "      HWFC "          << (hwfc ? "true" : "false")          << std::endl;
+        std::cout << "    RX ";
+        if (!rx_transmitting) std::cout << "not transmitting. Last transmitted ";
+        std::cout << "data: " << rx_transmit_data << std::endl;
+        std::cout << "    TX ";
+        if (!tx_transmitting) std::cout << "not transmitting. Last transmitted ";
+        std::cout << "data: " << tx_transmit_data << std::endl;
+
+        sc_stop();
     }
+}
 
+void Stimuli::enable_uart()
+{
+    bus_stimuli.addr = ADDR_ENABLE;
+    bus_stimuli.data = UART_ENABLE;
+    bus_stimuli.trans_type = WRITE;
+    bus_out->master_write(bus_stimuli);
+    assert(check_register(ADDR_ENABLE, UART_ENABLE));
+}
 
-    void rx_stimuli(int data)
+void Stimuli::disable_uart()
+{
+    bus_stimuli.addr = ADDR_ENABLE;
+    bus_stimuli.data = UART_DISABLE;
+    bus_stimuli.trans_type = WRITE;
+    bus_out->master_write(bus_stimuli);
+    assert(check_register(ADDR_ENABLE, UART_DISABLE));
+}
+
+void Stimuli::start_tx(task_channel_t ch)
+{
+    if (ch == BUS)
     {
-        rx_transmit_data = data;
-        rx_transmitting = true;
+        bus_stimuli.addr = ADDR_TASKS_START_TX;
+        bus_stimuli.data = UART_ENABLE;
+        bus_stimuli.trans_type = WRITE;
+        bus_out->master_write(bus_stimuli);
     }
-
-    bool read_rx(unsigned int data)
+    else if (ch == TASK)
     {
-        data_t rx_data_in_msg;
-        rx_data_ready = false;
-        unsigned int result;
+        tasks_t tasks { start_rx: NO_EVENT,
+                        stop_rx : NO_EVENT,
+                        start_tx: EVENT,
+                        stop_tx : NO_EVENT};
+        tasks_out->master_write(tasks);
+    }
+}
+
+void Stimuli::start_rx(task_channel_t ch)
+{
+    if (ch == BUS)
+    {
+        bus_stimuli.addr = ADDR_TASKS_START_RX;
+        bus_stimuli.data = UART_ENABLE;
+        bus_stimuli.trans_type = WRITE;
+        bus_out->master_write(bus_stimuli);
+    }
+    else if (ch == TASK)
+    {
+        tasks_t tasks { start_rx: EVENT,
+                        stop_rx : NO_EVENT,
+                        start_tx: NO_EVENT,
+                        stop_tx : NO_EVENT};
+        tasks_out->master_write(tasks);
+    }
+}
+
+void Stimuli::stop_tx(task_channel_t ch)
+{
+    if (ch == BUS)
+    {
+        bus_stimuli.addr = ADDR_TASKS_STOP_TX;
+        bus_stimuli.data = UART_ENABLE;
+        bus_stimuli.trans_type = WRITE;
+        bus_out->master_write(bus_stimuli);
+    }
+    else if (ch == TASK)
+    {
+        tasks_t tasks { start_rx: NO_EVENT,
+                        stop_rx : NO_EVENT,
+                        start_tx: NO_EVENT,
+                        stop_tx : EVENT};
+        tasks_out->master_write(tasks);
+    }
+}
+
+void Stimuli::stop_rx(task_channel_t ch)
+{
+    if (ch == BUS)
+    {
+        bus_stimuli.addr = ADDR_TASKS_STOP_RX;
+        bus_stimuli.data = UART_ENABLE;
+        bus_stimuli.trans_type = WRITE;
+        bus_out->master_write(bus_stimuli);
+    }
+    else if (ch == TASK)
+    {
+        tasks_t tasks { start_rx: NO_EVENT,
+                        stop_rx : EVENT,
+                        start_tx: NO_EVENT,
+                        stop_tx : NO_EVENT};
+        tasks_out->master_write(tasks);
+    }
+}
+
+bool Stimuli::tx_stimuli(unsigned int number)
+{
+  /*
+  Provides data for the TX module to transmit.
+  */
+
+  data_t data_out_msg;
+  data_out_msg.valid = true;
+  data_out_msg.data = number;
+  tx_data_out->set(data_out_msg);
+
+  wait(event_data_out_sync);
+
+  tx_transmitting = true;
+  data_out_msg.valid = false;
+  tx_data_out->set(data_out_msg);
+}
+
+void Stimuli::tx_no_stimuli()
+{
+    data_t data_out_msg;
+    data_out_msg.valid = false;
+    tx_data_out->set(data_out_msg);
+}
+
+
+void Stimuli::rx_stimuli(int data)
+{
+    rx_transmit_data = data;
+    rx_transmitting = true;
+}
+
+bool Stimuli::read_rx(unsigned int data)
+{
+    data_t rx_data_in_msg;
+    rx_data_ready = false;
+    unsigned int result;
+    rx_data_in->get(rx_data_in_msg);
+    while (!rx_data_in_msg.valid)
+    {
+        wait(SC_ZERO_TIME);
         rx_data_in->get(rx_data_in_msg);
-        while (!rx_data_in_msg.valid)
-        {
-            wait(SC_ZERO_TIME);
-            rx_data_in->get(rx_data_in_msg);
-        }
-        rx_data_in_notify->set(true);
-        while (rx_data_in_msg.valid)
-        {
-            wait(SC_ZERO_TIME);
-            rx_data_in->get(rx_data_in_msg);
-        }
-        rx_data_in_notify->set(false);
-        return (rx_data_in_msg.data & DATA_MASK) == data;
     }
-
-    void configure_uart(int two_stop_bits, int parity, int hwfc, int odd_parity)
+    rx_data_in_notify->set(true);
+    while (rx_data_in_msg.valid)
     {
-        bus_req_t trans;
-        trans.addr = ADDR_CONFIG;
-        trans.data = 0;
-        if (two_stop_bits)
-        {
-            trans.data |= CONFIG_STOP_MASK;
-        }
-        if (parity)
-        {
-            trans.data |= CONFIG_PARITY_MASK;
-        }
-        if (hwfc)
-        {
-            trans.data |= CONFIG_HWFC_MASK;
-        }
-        if (odd_parity)
-        {
-            trans.data |= CONFIG_ODD_PARITY_MASK;
-        }
-        trans.trans_type = WRITE;
-//        std::cout << "Write " << trans.data << " into register " << get_reg_name(trans.addr) << std::endl;
-        bus_out->master_write(trans);
-        this->two_stop_bits = two_stop_bits;
-        this->parity        = parity;
-        this->hwfc          = hwfc;
-        this->odd_parity    = odd_parity;
+        wait(SC_ZERO_TIME);
+        rx_data_in->get(rx_data_in_msg);
     }
+    rx_data_in_notify->set(false);
+    return (rx_data_in_msg.data & DATA_MASK) == data;
+}
 
-    void write_register(unsigned int addr, int value)
+void Stimuli::configure_uart(int two_stop_bits, int parity, int hwfc, int odd_parity)
+{
+    bus_req_t trans;
+    trans.addr = ADDR_CONFIG;
+    trans.data = 0;
+    if (two_stop_bits)
     {
-        bus_req_t trans;
-        trans.addr = addr;
-        trans.data = value;
-        trans.trans_type = WRITE;
-        bus_out->master_write(trans);
+        trans.data |= CONFIG_STOP_MASK;
     }
-
-    bool check_register(int addr, int value)
+    if (parity)
     {
-        bus_req_t trans;
-        bus_resp_t response;
-        trans.addr = addr;
-        trans.trans_type = READ;
-        bus_out->master_write(trans);
+        trans.data |= CONFIG_PARITY_MASK;
+    }
+    if (hwfc)
+    {
+        trans.data |= CONFIG_HWFC_MASK;
+    }
+    if (odd_parity)
+    {
+        trans.data |= CONFIG_ODD_PARITY_MASK;
+    }
+    trans.trans_type = WRITE;
+    bus_out->master_write(trans);
+    this->two_stop_bits = two_stop_bits;
+    this->parity        = parity;
+    this->hwfc          = hwfc;
+    this->odd_parity    = odd_parity;
+}
+
+void Stimuli::write_register(unsigned int addr, int value)
+{
+    bus_req_t trans;
+    trans.addr = addr;
+    trans.data = value;
+    trans.trans_type = WRITE;
+    bus_out->master_write(trans);
+}
+
+bool Stimuli::check_register(int addr, int value)
+{
+    /*
+    Reads a registers of the control module and compares it to the given value.
+    */
+
+    bus_req_t trans;
+    bus_resp_t response;
+    trans.addr = addr;
+    trans.trans_type = READ;
+    bus_out->master_write(trans);
+    bus_in->master_read(response);
+    while (!response.valid)
+    {
         bus_in->master_read(response);
-        while (!response.valid)
-        {
-            bus_in->master_read(response);
-        }
-
-//        std::cout << "Stimuli check_register: Response: " << response.data << std::endl;
-//        std::cout << "Read from register " << get_reg_name(addr) << " returned " << response.data << std::endl;
-        return response.data == value;
     }
+    return response.data == value;
+}
 
-    void suspend_uart()
-    {
-        stop_rx(BUS);
-        stop_tx(BUS);
-    }
-
-};
+void Stimuli::suspend_uart()
+{
+    stop_rx(BUS);
+    stop_tx(BUS);
+}
 
 void Stimuli::stimuli_generation()
 {
+    /*
+    Main function for module testing.
+    */
+
     test_tx();
 
     test_rx();
@@ -594,6 +598,10 @@ void Stimuli::stimuli_generation()
 
 void Stimuli::test_tx()
 {
+    /*
+    This test case verifies the basic TX behavior.
+    The TX module is started from the system bus and task interface.
+    */
 
     std::cout << "\n-------- Testing UART TX ---------" << std::endl;
 
@@ -654,6 +662,9 @@ void Stimuli::test_tx()
 
 void Stimuli::test_rx()
 {
+    /*
+    This test case verifies the basic RX behavior.
+    */
     std::cout << "-------- Testing UART RX ---------\n";
 
     // Enable UART
@@ -696,6 +707,12 @@ void Stimuli::test_rx()
 
 void Stimuli::test_rx_error()
 {
+    /*
+    This test case verifies the RX behavior in case of an error.
+    First, a parity error is simulated.
+    Second, a framing error is simulated.
+    */
+
     std::cout << "-------- Testing RX Error Generation --------\n";
 
     sc_time start_time;
@@ -764,19 +781,33 @@ void Stimuli::test_rx_error()
 
 void Stimuli::test_disabled()
 {
-    std::cout << "\n-------- Testing UART while disabled ---------" << std::endl;
-    std::cout << "Stimuli: disabling UART" << std::endl;
+    /*
+    TODO: Fix this test
+
+    This test case is supposed to show that the TX does not sent, if the UART is disabled.
+    However, timeouts are not modeled currently, since the simulation was changed to be fully asynchronous (sc_zero_time).
+    */
+
+    std::cout << "\n-------- Testing UART while disabled ---------\n";
+    std::cout << "Stimuli: disabling UART\n";
     disable_uart();
 
-    std::cout << "Stimuli: starting TX with BUS while disabled" << std::endl;
+    std::cout << "Stimuli: starting TX with BUS while disabled\n";
     start_tx(BUS);
     //tx_stimuli();
-    std::cout << "Stimuli: enabling UART" << std::endl;
+    std::cout << "Stimuli: enabling UART\n";
     enable_uart();
 }
 
 void Stimuli::test_hwfc()
 {
+    /*
+    TODO: Fix this test
+
+    This test case is supposed to show that the TX does not sent, if the cts flag is not given.
+    However, timeouts are not modeled currently, since the simulation was changed to be fully asynchronous (sc_zero_time).
+    */
+
     std::cout << "-------- Testing Hardware Flow Control --------\n";
 
     // Enable UART

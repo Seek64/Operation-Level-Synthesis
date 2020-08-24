@@ -23,7 +23,7 @@ SC_MODULE(Uart_control) {
     slave_in<tx_events_t>    tx_events_in;
 
     // RX Interface
-    shared_out<bool>       rx_active_out; //TODO: Rename to control?
+    shared_out<bool>       rx_active_out;
     shared_out<config_t>   rx_config_out;
     slave_in<rx_events_t>  rx_events_in;
 
@@ -38,13 +38,11 @@ SC_MODULE(Uart_control) {
     bus_resp_t          bus_out_msg;
     bool                ctrl_to_hwfc_msg;
 
-    //bool            tx_active_out_msg;
     tx_control_t    tx_control_out_msg;
     tx_events_t     tx_events_msg;
 
     bool            rx_active_out_msg;
     rx_events_t     rx_events_msg;
-
 
     tasks_t             tasks_in_msg;
     events_t            events_out_msg;
