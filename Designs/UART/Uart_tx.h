@@ -129,7 +129,7 @@ private:
 
     bool get_data_bit(unsigned int data, unsigned int data_count) const
     {
-        return  data & (1 << data_count);
+        return  (data & (1 << data_count)) != 0;
     }
 
 };

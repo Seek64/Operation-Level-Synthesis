@@ -28,26 +28,19 @@ SC_MODULE(Uart_control) {
     slave_in<rx_events_t>  rx_events_in;
 
 
-    //shared_in<bool> cts_in;
-    //master_out<bool> rts_out;
-    //shared_out<bool> hwfc_control_out;
+    bus_req_t    bus_in_msg;
+    bus_resp_t   bus_out_msg;
 
+    tx_control_t tx_control_out_msg;
+    tx_events_t  tx_events_msg;
 
+    bool         rx_active_out_msg;
+    rx_events_t  rx_events_msg;
 
-    bus_req_t           bus_in_msg;
-    bus_resp_t          bus_out_msg;
-    bool                ctrl_to_hwfc_msg;
-
-    tx_control_t    tx_control_out_msg;
-    tx_events_t     tx_events_msg;
-
-    bool            rx_active_out_msg;
-    rx_events_t     rx_events_msg;
-
-    tasks_t             tasks_in_msg;
-    events_t            events_out_msg;
-    bool                cts_in_msg;
-    config_t            config_msg;
+    tasks_t      tasks_in_msg;
+    events_t     events_out_msg;
+    bool         cts_in_msg;
+    config_t     config_msg;
 
 
 
@@ -57,13 +50,11 @@ SC_MODULE(Uart_control) {
     bool cts_in_valid;
     bool bus_wr;
     bool bus_rd;
-    bool rx_error_valid;
     bool tx_events_valid;
     bool rx_events_valid;
 
     // Tmp registers
     unsigned int error_src_tmp;
-    unsigned int bus_data_tmp;
 
     // Visible registers
     unsigned int error_src;
@@ -72,10 +63,6 @@ SC_MODULE(Uart_control) {
     tasks_t      tasks;
     bool         cts_internal;
     bool         rts_internal;
-    bool         rts_internal_old;
-
-    //bool enabled;
-
 
     SC_CTOR(Uart_control) :
 
@@ -92,16 +79,12 @@ SC_MODULE(Uart_control) {
             bus_out("bus_out"),
             tx_events_in("tx_events_in"),
             rx_events_in("rx_events_in"),
-            //tx_active_out("tx_active_out"),
             tx_control_out("tx_control_out"),
             rx_active_out("rx_active_out"),
             tasks_in("tasks"),
             events_out("events"),
             tx_config_out("tx_config_out"),
-            //hwfc_control_out("hwfc_control_out"),
-#ifdef SIM
             rx_config_out("rx_config_out"),
-#endif
             bus_wr(false),
             bus_rd(false),
             cts_in("cts_in"),
@@ -123,6 +106,7 @@ SC_MODULE(Uart_control) {
     bool ODD_PARITY(unsigned int odd_parity) const {return (odd_parity & 0x100) != 0;}
 
     void fsm();
+    
 private:
 
     // bool event_triggered_cts(bool valid, bool cts, bool hwfc_enabled) const {
