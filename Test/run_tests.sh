@@ -8,7 +8,7 @@ VIVADO_HLS="/import/public/common/Xilinx/Vivado/2018.2/bin/vivado_hls"
 
 cd $OLS_TEST_HOME
 
- Synthesize Framer as SCO
+# Synthesize Framer as SCO
 $DESCAM -f ../Designs/Framer/PPA/Framer.h -o . -PrintITL --hls-sco
 $DESCAM -f ../Designs/Framer/PPA/Framer.h -o . -PrintHLS --sco
 cd PrintHLS
