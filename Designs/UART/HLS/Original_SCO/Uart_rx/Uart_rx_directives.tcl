@@ -1,0 +1,18 @@
+config_rtl -reset all -reset_async -reset_level high
+config_schedule -effort high -relax_ii_for_timing=0 -verbose=0
+config_bind -effort high
+config_interface -trim_dangling_port
+set_directive_latency -max=0 Uart_rx_operations
+set_directive_interface -mode ap_ctrl_none Uart_rx_operations
+set_directive_interface -mode ap_none Uart_rx_operations events_out_sig
+set_directive_interface -mode ap_none Uart_rx_operations events_out_notify
+set_directive_interface -mode ap_none Uart_rx_operations rxd_notify
+set_directive_interface -mode ap_none Uart_rx_operations out_parity
+set_directive_interface -mode ap_none Uart_rx_operations out_events_out_msg
+set_directive_interface -mode ap_none Uart_rx_operations out_timeout
+set_directive_interface -mode ap_none Uart_rx_operations out_wait_framing_break
+set_directive_interface -mode ap_none Uart_rx_operations out_data_out_msg
+set_directive_interface -mode ap_none Uart_rx_operations out_suspending_count
+set_directive_interface -mode ap_none Uart_rx_operations out_first_stop_bit
+set_directive_allocation -limit 1 -type function Uart_rx_operations parity_not_correct
+set_directive_allocation -limit 1 -type function Uart_rx_operations update_data

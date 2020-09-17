@@ -64,7 +64,12 @@ SC_MODULE(Uart_rx)
             if (!timeout || control_active_in_msg)
             {
                 timeout = false;
-                suspending_count = control_active_in_msg ? 0 : suspending_count;
+//                suspending_count = control_active_in_msg ? 0 : suspending_count; // Generates SystemC PPA Compliance Error!
+
+                if (control_active_in_msg) {
+                  suspending_count = 0;
+                }
+
                 //if (success_rxd) std::cout << "##### RX: got a bit! Not timeout. Active: " << control_active_in_msg << std::endl;
                 // Data read handshake
                 data_out_sync->get(data_out_sync_msg);
@@ -82,7 +87,11 @@ SC_MODULE(Uart_rx)
 #ifdef SIM
 //                        debug_print(RX, "Waiting for TIMEOUT: " + std::to_string(suspending_count));
 #endif
-                        suspending_count = ((rx_bit == START_BIT) && !wait_framing_break) ? suspending_count + 11 : suspending_count + 1;
+                        suspending_count = suspending_count + 1;
+                        if ((rx_bit == START_BIT) && !wait_framing_break) {
+                          suspending_count = suspending_count + 10;
+                        }
+                        //suspending_count = ((rx_bit == START_BIT) && !wait_framing_break) ? suspending_count + 11 : suspending_count + 1;
                     }
 
                     if (!control_active_in_msg && suspending_count >= UART_TIMEOUT)
@@ -223,8 +232,16 @@ SC_MODULE(Uart_rx)
     bool parity_not_correct(unsigned int data, bool odd_parity, bool parity_bit) const
     {
         //std::cout << "Data: " << data << "Parity of data: " << bits_xor(data) << "Received parity bit: " << parity_bit << std::endl;
-        if (odd_parity) return ((bits_xor(data)) == 1) == parity_bit;
-        else            return ((bits_xor(data)) == 1) != parity_bit;
+
+      //  bool calculated_parity = ((bits_xor(data)) == 1);
+
+        return ((odd_parity != ((bits_xor(data)) == 1)) != parity_bit);
+
+        //if (odd_parity) return ((bits_xor(data)) == 1) == parity_bit;
+        //else            return ((bits_xor(data)) == 1) != parity_bit;
+
+        //return odd_parity ^ bits_xor(data) ^ parity_bit;
+
 
     }
 
