@@ -93,7 +93,7 @@ SC_MODULE(Uart_control) {
         SC_THREAD(fsm);
     }
 
-    bool ENABLE(unsigned int enable) const { return (enable & 1) != 0;}
+    bool ENABLE_SET(unsigned int enable) const { return (enable & 1) != 0;}
     bool TASK_MASK(unsigned int task) const { return (task & 1) != 0;}
     unsigned int ERROR_MASK(unsigned int error_src) const {return (error_src & 0xF);}
     unsigned int ENABLE_MASK(unsigned int enable) const{return (enable & 1);}
@@ -106,7 +106,7 @@ SC_MODULE(Uart_control) {
     bool ODD_PARITY(unsigned int odd_parity) const {return (odd_parity & 0x100) != 0;}
 
     void fsm();
-    
+
 private:
 
     // bool event_triggered_cts(bool valid, bool cts, bool hwfc_enabled) const {
@@ -190,15 +190,15 @@ void Uart_control::fsm()
 
         // EVENTS
         // Events should be forwarded without delay. Use old ENABLE value.
-        events_out_msg.txd_ready   = ENABLE(enable) && tx_events_valid && tx_events_msg.done;
-        events_out_msg.rxd_ready   = ENABLE(enable) && rx_events_valid && rx_events_msg.ready;
-        events_out_msg.rx_timeout  = ENABLE(enable) && rx_events_valid && rx_events_msg.timeout;
-        events_out_msg.error       = ENABLE(enable) && rx_events_valid && (rx_events_msg.error_src != 0);
+        events_out_msg.txd_ready   = ENABLE_SET(enable) && tx_events_valid && tx_events_msg.done;
+        events_out_msg.rxd_ready   = ENABLE_SET(enable) && rx_events_valid && rx_events_msg.ready;
+        events_out_msg.rx_timeout  = ENABLE_SET(enable) && rx_events_valid && rx_events_msg.timeout;
+        events_out_msg.error       = ENABLE_SET(enable) && rx_events_valid && (rx_events_msg.error_src != 0);
 
-        events_out_msg.cts  = ENABLE(enable) && HWFC(frame_config) && cts_in_valid && (cts_in_msg == CTS_ACTIVATED);
-        events_out_msg.ncts = ENABLE(enable) && HWFC(frame_config) && cts_in_valid && (cts_in_msg == CTS_DEACTIVATED);
+        events_out_msg.cts  = ENABLE_SET(enable) && HWFC(frame_config) && cts_in_valid && (cts_in_msg == CTS_ACTIVATED);
+        events_out_msg.ncts = ENABLE_SET(enable) && HWFC(frame_config) && cts_in_valid && (cts_in_msg == CTS_DEACTIVATED);
 
-        if (ENABLE(enable) && ((cts_in_valid && HWFC(frame_config)) || rx_events_valid || tx_events_valid))
+        if (ENABLE_SET(enable) && ((cts_in_valid && HWFC(frame_config)) || rx_events_valid || tx_events_valid))
         {
             events_out->master_write(events_out_msg);
         }
@@ -214,12 +214,12 @@ void Uart_control::fsm()
         tasks.start_tx = tasks.start_tx || (tasks_in_valid && tasks_in_msg.start_tx);
         tasks.stop_tx  = tasks.stop_tx  || (tasks_in_valid && tasks_in_msg.stop_tx);
 
-        tx_control_out_msg.active = ENABLE(enable) && (tasks.start_tx || (tx_control_out_msg.active && !(tasks.stop_tx)));
-        rx_active_out_msg         = ENABLE(enable) && (tasks.start_rx || (rx_active_out_msg         && !(tasks.stop_rx)));
+        tx_control_out_msg.active = ENABLE_SET(enable) && (tasks.start_tx || (tx_control_out_msg.active && !(tasks.stop_tx)));
+        rx_active_out_msg         = ENABLE_SET(enable) && (tasks.start_rx || (rx_active_out_msg         && !(tasks.stop_rx)));
 
         // Update ERROR_SRC register in case of errors. New errors have priority over clearance
         error_src_tmp  = (bus_wr && (bus_in_msg.addr == ADDR_ERROR_SRC)) ? ERROR_MASK(~bus_in_msg.data & error_src) : error_src;
-        error_src      = (ENABLE(enable) && rx_events_valid)             ? (error_src_tmp | rx_events_msg.error_src): error_src_tmp;
+        error_src      = (ENABLE_SET(enable) && rx_events_valid)             ? (error_src_tmp | rx_events_msg.error_src): error_src_tmp;
         enable         = (bus_wr && (bus_in_msg.addr == ADDR_ENABLE))    ? ENABLE_MASK(bus_in_msg.data)             : enable;
         frame_config   = (bus_wr && (bus_in_msg.addr == ADDR_CONFIG))    ? CONFIG_MASK(bus_in_msg.data)             :frame_config;
 
@@ -229,7 +229,7 @@ void Uart_control::fsm()
         // Combinational
         tx_control_out_msg.cts    = cts_internal && HWFC(frame_config);
 
-        rts_internal = (!ENABLE(enable) || (HWFC(frame_config) && !rx_active_out_msg)) ? RTS_DEACTIVATED : RTS_ACTIVATED;
+        rts_internal = (!ENABLE_SET(enable) || (HWFC(frame_config) && !rx_active_out_msg)) ? RTS_DEACTIVATED : RTS_ACTIVATED;
         config_msg.parity        = PARITY(frame_config);
         config_msg.two_stop_bits = STOP(frame_config);
         config_msg.odd_parity    = ODD_PARITY(frame_config);
