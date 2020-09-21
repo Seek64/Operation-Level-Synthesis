@@ -53,9 +53,9 @@ fi
 
 if [[ $Uart_tx_result -eq 1 ]]
 then
-  echo "Uart_rx test passed"
+  echo "Uart_tx test passed"
 else
-  echo "Uart_rx test failed"
+  echo "Uart_tx test failed"
 fi
 
 if [[ $Uart_rx_result -eq 1 ]]
