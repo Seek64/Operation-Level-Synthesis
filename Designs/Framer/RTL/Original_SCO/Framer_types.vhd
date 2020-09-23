@@ -36,10 +36,14 @@ package Framer_types is
 	constant op_state_4_47 : Framer_operation_t := "10111";
 	constant op_state_4_49 : Framer_operation_t := "11000";
 	constant op_state_4_52 : Framer_operation_t := "11001";
-	constant op_state_wait : Framer_operation_t := "11010";
 
 	-- Enum Types
-	type Phases is (FIND_SYNC, INITIALISE, MISS, SEARCH, SYNC);
+	subtype Phases is std_logic_vector(2 downto 0);
+	constant FIND_SYNC : Phases := "000";
+	constant INITIALISE : Phases := "001";
+	constant MISS : Phases := "010";
+	constant SEARCH : Phases := "011";
+	constant SYNC : Phases := "100";
 
 	-- Compound Types
 	type marker_t is record
@@ -47,10 +51,8 @@ package Framer_types is
 		markerAlignment: std_logic_vector(31 downto 0);
 	end record;
 
-	-- Array Types
-
 	-- Constants
-	constant WORDS_IN_FRAME: std_logic_vector(31 downto 0) := x"00000040";
 	constant FRM_PULSE_POS: std_logic_vector(31 downto 0) := x"00000000";
+	constant WORDS_IN_FRAME: std_logic_vector(31 downto 0) := x"00000040";
 
 end package Framer_types;

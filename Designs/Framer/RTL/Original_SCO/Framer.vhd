@@ -8,8 +8,8 @@ entity Framer_module is
 port(
 	data_word_sig: in marker_t;
 	lof_sig: in std_logic;
-	frame_pulse_sig: out std_logic;
 	oof_sig: out std_logic;
+	frame_pulse_sig: out std_logic;
 	frame_pulse_notify: out std_logic;
 	data_word_sync: in std_logic;
 	clk: in std_logic;
@@ -20,26 +20,23 @@ end Framer_module;
 architecture Framer_arch of Framer_module is
 
 	-- Internal Registers
-	signal align: std_logic_vector(31 downto 0);
-	signal nextphase: Phases;
 	signal frm_cnt: std_logic_vector(31 downto 0);
-	signal out_align: std_logic_vector(31 downto 0);
-	signal out_nextphase: std_logic_vector(2 downto 0);
-	signal out_frm_cnt: std_logic_vector(31 downto 0);
+	signal nextphase: Phases;
+	signal align: std_logic_vector(31 downto 0);
 
 	-- Operation Module Inputs
 	signal data_word_sig_markerAlignment_in: std_logic_vector(31 downto 0);
 	signal active_operation_in: std_logic_vector(4 downto 0);
 
 	-- Module Outputs
-	signal frame_pulse_sig_out: std_logic;
 	signal oof_sig_out: std_logic;
+	signal frame_pulse_sig_out: std_logic;
 	signal frame_pulse_notify_out: std_logic;
 
 	-- Monitor Signals
-	signal active_state: Framer_state_t;
 	signal next_state: Framer_state_t;
 	signal active_operation: Framer_operation_t;
+	signal active_state: Framer_state_t;
 
 	-- Functions
 	function bool_to_sl(x : boolean) return std_logic;
@@ -59,11 +56,11 @@ architecture Framer_arch of Framer_module is
 		ap_clk: in std_logic;
 		ap_rst: in std_logic;
 		data_word_sig_markerAlignment_V: in std_logic_vector(31 downto 0);
-		frame_pulse_sig: out std_logic;
 		oof_sig: out std_logic;
-		out_align_V: out std_logic_vector(31 downto 0);
-		out_nextphase: out std_logic_vector(2 downto 0);
-		out_frm_cnt_V: out std_logic_vector(31 downto 0);
+		frame_pulse_sig: out std_logic;
+		frm_cnt_V: out std_logic_vector(31 downto 0);
+		nextphase: out std_logic_vector(2 downto 0);
+		align_V: out std_logic_vector(31 downto 0);
 		frame_pulse_notify: out std_logic;
 		active_operation: in std_logic_vector(4 downto 0)
 	);
@@ -76,17 +73,17 @@ begin
 		ap_clk => clk,
 		ap_rst => rst,
 		data_word_sig_markerAlignment_V => data_word_sig_markerAlignment_in,
-		frame_pulse_sig => frame_pulse_sig_out,
 		oof_sig => oof_sig_out,
-		out_align_V => out_align,
-		out_nextphase => out_nextphase,
-		out_frm_cnt_V => out_frm_cnt,
+		frame_pulse_sig => frame_pulse_sig_out,
+		frm_cnt_V => frm_cnt,
+		nextphase => nextphase,
+		align_V => align,
 		frame_pulse_notify => frame_pulse_notify_out,
 		active_operation => active_operation_in
 	);
 
 	-- Monitor
-	process (active_state, data_word_sync, data_word_sig.isMarker, data_word_sig.markerAlignment, align, nextphase, frm_cnt)
+	process (active_state, data_word_sync, data_word_sig.markerAlignment, data_word_sig.isMarker, frm_cnt, nextphase, align)
 	begin
 		case active_state is
 		when st_state_1 =>
@@ -180,13 +177,8 @@ begin
 
 
 	-- Operation Module Outputs
-	frame_pulse_sig <= frame_pulse_sig_out;
 	oof_sig <= oof_sig_out;
-	align <= out_align;
-	nextphase <= Phases'val(to_integer(unsigned(out_nextphase)));
-	frm_cnt <= out_frm_cnt;
-
-	-- Output Register to Output Mapping
+	frame_pulse_sig <= frame_pulse_sig_out;
 
 	-- Notify Signals
 	frame_pulse_notify <= frame_pulse_notify_out;

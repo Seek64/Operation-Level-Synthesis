@@ -7,6 +7,6 @@ set_directive_interface -mode ap_ctrl_none Framer_operations
 set_directive_interface -mode ap_none Framer_operations oof_sig
 set_directive_interface -mode ap_none Framer_operations frame_pulse_sig
 set_directive_interface -mode ap_none Framer_operations frame_pulse_notify
-set_directive_interface -mode ap_none Framer_operations out_nextphase
-set_directive_interface -mode ap_none Framer_operations out_frm_cnt
-set_directive_interface -mode ap_none Framer_operations out_align
+set_directive_interface -mode ap_none Framer_operations frm_cnt
+set_directive_interface -mode ap_none Framer_operations nextphase
+set_directive_interface -mode ap_none Framer_operations align
