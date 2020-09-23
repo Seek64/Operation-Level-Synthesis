@@ -9,7 +9,7 @@ set_directive_interface -mode ap_none Uart_tx_operations events_out_sig
 set_directive_interface -mode ap_none Uart_tx_operations data_in_notify_notify
 set_directive_interface -mode ap_none Uart_tx_operations events_out_notify
 set_directive_interface -mode ap_none Uart_tx_operations txd_notify
-set_directive_interface -mode ap_none Uart_tx_operations out_txd_bit
-set_directive_interface -mode ap_none Uart_tx_operations out_data
+set_directive_interface -mode ap_none Uart_tx_operations data
+set_directive_interface -mode ap_none Uart_tx_operations txd_bit
 set_directive_allocation -limit 1 -type function Uart_tx_operations get_data_bit
 set_directive_allocation -limit 1 -type function Uart_tx_operations get_even_parity

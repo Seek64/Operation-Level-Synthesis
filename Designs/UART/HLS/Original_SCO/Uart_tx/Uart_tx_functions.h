@@ -2,7 +2,7 @@
 #define FUNCTIONS_H
 
 #include "ap_int.h"
-#include "Uart_tx_data_Types.h"
+#include "Uart_tx_data_types.h"
 
 bool get_data_bit(ap_uint<32> data, ap_uint<32> data_count);
 bool get_even_parity(ap_uint<32> data);

@@ -6,9 +6,9 @@ use work.Uart_tx_types.all;
 
 entity Uart_tx_module is
 port(
-	config_in_sig: in config_t;
 	control_in_sig: in tx_control_t;
 	data_in_sig: in data_t;
+	config_in_sig: in config_t;
 	txd_sig: out std_logic;
 	data_in_notify_sig: out std_logic;
 	events_out_sig: out tx_events_t;
@@ -16,18 +16,16 @@ port(
 	events_out_notify: out std_logic;
 	txd_notify: out std_logic;
 	txd_sync: in std_logic;
-	clk: in std_logic;
-	rst: in std_logic
+	rst: in std_logic;
+	clk: in std_logic
 );
 end Uart_tx_module;
 
 architecture Uart_tx_arch of Uart_tx_module is
 
 	-- Internal Registers
-	signal txd_bit: std_logic;
 	signal data: std_logic_vector(31 downto 0);
-	signal out_txd_bit: std_logic;
-	signal out_data: std_logic_vector(31 downto 0);
+	signal txd_bit: std_logic;
 
 	-- Operation Module Inputs
 	signal config_in_sig_odd_parity_in: std_logic;
@@ -35,27 +33,40 @@ architecture Uart_tx_arch of Uart_tx_module is
 	signal active_operation_in: std_logic_vector(4 downto 0);
 
 	-- Module Outputs
-	signal data_in_notify_sig_out: std_logic;
 	signal events_out_sig_done_out: std_logic;
+	signal data_in_notify_sig_out: std_logic;
 	signal data_in_notify_notify_out: std_logic;
 	signal events_out_notify_out: std_logic;
 	signal txd_notify_out: std_logic;
 
 	-- Monitor Signals
-	signal next_state: Uart_tx_state_t;
 	signal active_operation: Uart_tx_operation_t;
 	signal active_state: Uart_tx_state_t;
+	signal next_state: Uart_tx_state_t;
+
+	-- Functions
+	function bool_to_sl(x : boolean) return std_logic;
+
+	function bool_to_sl(x : boolean) return std_logic is
+	begin
+  	if x then
+    	return '1';
+  	else
+    	return '0';
+  	end if;
+  end bool_to_sl;
+
 
 	component Uart_tx_operations is
 	port(
-		ap_clk: in std_logic;
 		ap_rst: in std_logic;
+		ap_clk: in std_logic;
 		config_in_sig_odd_parity: in std_logic;
 		data_in_sig_data_V: in std_logic_vector(31 downto 0);
-		data_in_notify_sig: out std_logic;
 		events_out_sig_done: out std_logic;
-		out_txd_bit: out std_logic;
-		out_data_V: out std_logic_vector(31 downto 0);
+		data_in_notify_sig: out std_logic;
+		data_V: out std_logic_vector(31 downto 0);
+		txd_bit: out std_logic;
 		data_in_notify_notify: out std_logic;
 		events_out_notify: out std_logic;
 		txd_notify: out std_logic;
@@ -67,14 +78,14 @@ begin
 
 	operations_inst: Uart_tx_operations
 	port map(
-		ap_clk => clk,
 		ap_rst => rst,
+		ap_clk => clk,
 		config_in_sig_odd_parity => config_in_sig_odd_parity_in,
 		data_in_sig_data_V => data_in_sig_data_in,
-		data_in_notify_sig => data_in_notify_sig_out,
 		events_out_sig_done => events_out_sig_done_out,
-		out_txd_bit => out_txd_bit,
-		out_data_V => out_data,
+		data_in_notify_sig => data_in_notify_sig_out,
+		data_V => data,
+		txd_bit => txd_bit,
 		data_in_notify_notify => data_in_notify_notify_out,
 		events_out_notify => events_out_notify_out,
 		txd_notify => txd_notify_out,
@@ -82,14 +93,14 @@ begin
 	);
 
 	-- Monitor
-	process (active_state, txd_sync, data_in_sig.valid, control_in_sig.active, control_in_sig.cts, config_in_sig.parity, config_in_sig.two_stop_bits)
+	process (active_state, txd_sync, data_in_sig.valid, config_in_sig.parity, config_in_sig.two_stop_bits, control_in_sig.active, control_in_sig.cts)
 	begin
 		case active_state is
 		when st_IDLE_1 =>
-			if ((data_in_sig.valid = '1') and (control_in_sig.active = '1') and not((control_in_sig.cts = '1'))) then 
+			if (data_in_sig.valid and control_in_sig.active and not(control_in_sig.cts)) = '1' then 
 				active_operation <= op_IDLE_1_1;
 				next_state <= st_DATA_NOTIFY_2;
-			elsif (not((control_in_sig.active = '1'))) then 
+			elsif (not(control_in_sig.active)) = '1' then 
 				active_operation <= op_IDLE_1_2;
 				next_state <= st_IDLE_1;
 			else
@@ -100,7 +111,7 @@ begin
 				active_operation <= op_DATA_NOTIFY_2_4;
 				next_state <= st_TRANSMITTING_START_3;
 		when st_TRANSMITTING_START_3 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_START_3_5;
 				next_state <= st_TRANSMITTING_DATA_ZERO_4;
 			else
@@ -108,7 +119,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_ZERO_4 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_ZERO_4_6;
 				next_state <= st_TRANSMITTING_DATA_ONE_5;
 			else
@@ -116,7 +127,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_ONE_5 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_ONE_5_7;
 				next_state <= st_TRANSMITTING_DATA_TWO_6;
 			else
@@ -124,7 +135,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_TWO_6 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_TWO_6_8;
 				next_state <= st_TRANSMITTING_DATA_THREE_7;
 			else
@@ -132,7 +143,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_THREE_7 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_THREE_7_9;
 				next_state <= st_TRANSMITTING_DATA_FOUR_8;
 			else
@@ -140,7 +151,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_FOUR_8 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_FOUR_8_10;
 				next_state <= st_TRANSMITTING_DATA_FIVE_9;
 			else
@@ -148,7 +159,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_FIVE_9 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_FIVE_9_11;
 				next_state <= st_TRANSMITTING_DATA_SIX_10;
 			else
@@ -156,7 +167,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_SIX_10 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_SIX_10_12;
 				next_state <= st_TRANSMITTING_DATA_SEVEN_11;
 			else
@@ -164,10 +175,10 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_DATA_SEVEN_11 =>
-			if ((txd_sync = '1') and (config_in_sig.parity = '1')) then 
+			if (txd_sync and config_in_sig.parity) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_SEVEN_11_13;
 				next_state <= st_TRANSMITTING_PARITY_12;
-			elsif ((txd_sync = '1') and not((config_in_sig.parity = '1'))) then 
+			elsif (txd_sync and not(config_in_sig.parity)) = '1' then 
 				active_operation <= op_TRANSMITTING_DATA_SEVEN_11_14;
 				next_state <= st_TRANSMITTING_STOP_FIRST_13;
 			else
@@ -175,7 +186,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_PARITY_12 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_PARITY_12_15;
 				next_state <= st_TRANSMITTING_STOP_FIRST_13;
 			else
@@ -183,10 +194,10 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_STOP_FIRST_13 =>
-			if ((txd_sync = '1') and (config_in_sig.two_stop_bits = '1')) then 
+			if (txd_sync and config_in_sig.two_stop_bits) = '1' then 
 				active_operation <= op_TRANSMITTING_STOP_FIRST_13_16;
 				next_state <= st_TRANSMITTING_STOP_SECOND_14;
-			elsif ((txd_sync = '1') and not((config_in_sig.two_stop_bits = '1'))) then 
+			elsif (txd_sync and not(config_in_sig.two_stop_bits)) = '1' then 
 				active_operation <= op_TRANSMITTING_STOP_FIRST_13_17;
 				next_state <= st_STOP_NOTIFY_15;
 			else
@@ -194,7 +205,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_TRANSMITTING_STOP_SECOND_14 =>
-			if ((txd_sync = '1')) then 
+			if (txd_sync) = '1' then 
 				active_operation <= op_TRANSMITTING_STOP_SECOND_14_18;
 				next_state <= st_STOP_NOTIFY_15;
 			else
@@ -209,10 +220,8 @@ begin
 
 
 	-- Operation Module Outputs
-	data_in_notify_sig <= data_in_notify_sig_out;
 	events_out_sig.done <= events_out_sig_done_out;
-	txd_bit <= out_txd_bit;
-	data <= out_data;
+	data_in_notify_sig <= data_in_notify_sig_out;
 
 	-- Output Register to Output Mapping
 	txd_sig <= txd_bit;

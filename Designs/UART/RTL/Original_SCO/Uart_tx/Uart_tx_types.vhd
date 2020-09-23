@@ -31,7 +31,6 @@ package Uart_tx_types is
 	constant op_TRANSMITTING_STOP_SECOND_14_18 : Uart_tx_operation_t := "10010";
 	constant op_state_wait : Uart_tx_operation_t := "10011";
 
-	-- Enum Types
 
 	-- Compound Types
 	type config_t is record
@@ -50,9 +49,5 @@ package Uart_tx_types is
 		data: std_logic_vector(31 downto 0);
 		valid: std_logic;
 	end record;
-
-	-- Array Types
-
-	-- Constants
 
 end package Uart_tx_types;

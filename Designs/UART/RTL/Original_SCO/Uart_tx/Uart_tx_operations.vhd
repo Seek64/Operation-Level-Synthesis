@@ -13,12 +13,12 @@ entity Uart_tx_operations is
 port (
     ap_clk : IN STD_LOGIC;
     ap_rst : IN STD_LOGIC;
-    config_in_sig_odd_parity : IN STD_LOGIC_VECTOR (0 downto 0);
     data_in_sig_data_V : IN STD_LOGIC_VECTOR (31 downto 0);
+    config_in_sig_odd_parity : IN STD_LOGIC_VECTOR (0 downto 0);
     data_in_notify_sig : OUT STD_LOGIC;
     events_out_sig_done : OUT STD_LOGIC;
-    out_txd_bit : OUT STD_LOGIC;
-    out_data_V : OUT STD_LOGIC_VECTOR (31 downto 0);
+    data_V : OUT STD_LOGIC_VECTOR (31 downto 0);
+    txd_bit : OUT STD_LOGIC;
     data_in_notify_notify : OUT STD_LOGIC;
     events_out_notify : OUT STD_LOGIC;
     txd_notify : OUT STD_LOGIC;
@@ -32,8 +32,8 @@ architecture behav of Uart_tx_operations is
     "Uart_tx_operations,hls_ip_2018_2,{HLS_INPUT_TYPE=cxx,HLS_INPUT_FLOAT=0,HLS_INPUT_FIXED=1,HLS_INPUT_PART=xcvu9p-flga2104-2-i,HLS_INPUT_CLOCK=20.000000,HLS_INPUT_ARCH=others,HLS_SYN_CLOCK=1.518400,HLS_SYN_LAT=0,HLS_SYN_TPT=none,HLS_SYN_MEM=0,HLS_SYN_DSP=0,HLS_SYN_FF=39,HLS_SYN_LUT=98,HLS_VERSION=2018_2}";
     constant ap_const_logic_1 : STD_LOGIC := '1';
     constant ap_ST_fsm_state1 : STD_LOGIC_VECTOR (0 downto 0) := "1";
-    constant ap_const_lv1_1 : STD_LOGIC_VECTOR (0 downto 0) := "1";
     constant ap_const_lv32_0 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000000";
+    constant ap_const_lv1_1 : STD_LOGIC_VECTOR (0 downto 0) := "1";
     constant ap_const_lv1_0 : STD_LOGIC_VECTOR (0 downto 0) := "0";
     constant ap_const_lv5_8 : STD_LOGIC_VECTOR (4 downto 0) := "01000";
     constant ap_const_lv5_F : STD_LOGIC_VECTOR (4 downto 0) := "01111";
@@ -52,12 +52,12 @@ architecture behav of Uart_tx_operations is
     constant ap_const_lv4_2 : STD_LOGIC_VECTOR (3 downto 0) := "0010";
     constant ap_const_lv4_5 : STD_LOGIC_VECTOR (3 downto 0) := "0101";
     constant ap_const_lv4_6 : STD_LOGIC_VECTOR (3 downto 0) := "0110";
+    constant ap_const_lv5_2 : STD_LOGIC_VECTOR (4 downto 0) := "00010";
+    constant ap_const_lv5_1 : STD_LOGIC_VECTOR (4 downto 0) := "00001";
     constant ap_const_lv5_10 : STD_LOGIC_VECTOR (4 downto 0) := "10000";
     constant ap_const_lv5_E : STD_LOGIC_VECTOR (4 downto 0) := "01110";
     constant ap_const_lv5_9 : STD_LOGIC_VECTOR (4 downto 0) := "01001";
-    constant ap_const_lv5_2 : STD_LOGIC_VECTOR (4 downto 0) := "00010";
     constant ap_const_lv5_0 : STD_LOGIC_VECTOR (4 downto 0) := "00000";
-    constant ap_const_lv5_1 : STD_LOGIC_VECTOR (4 downto 0) := "00001";
     constant ap_const_lv5_12 : STD_LOGIC_VECTOR (4 downto 0) := "10010";
     constant ap_const_lv5_11 : STD_LOGIC_VECTOR (4 downto 0) := "10001";
     constant ap_const_lv5_13 : STD_LOGIC_VECTOR (4 downto 0) := "10011";
@@ -66,8 +66,8 @@ architecture behav of Uart_tx_operations is
     constant ap_const_logic_0 : STD_LOGIC := '0';
     constant ap_const_boolean_1 : BOOLEAN := true;
 
-    signal txd_bit_reg : STD_LOGIC_VECTOR (0 downto 0) := "1";
     signal data_reg_V : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000000";
+    signal txd_bit_reg : STD_LOGIC_VECTOR (0 downto 0) := "1";
     signal data_in_notify_sig_r : STD_LOGIC_VECTOR (0 downto 0) := "0";
     signal events_out_sig_reg_d : STD_LOGIC_VECTOR (0 downto 0) := "0";
     signal data_in_notify_notif : STD_LOGIC_VECTOR (0 downto 0) := "0";
@@ -141,7 +141,7 @@ begin
         elsif (ap_clk'event and ap_clk =  '1') then
             if (((ap_const_lv5_1 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1))) then 
                 data_in_notify_notif <= ap_const_lv1_1;
-            elsif ((((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_10 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_5 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_6 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_7 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_A = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_B = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_C = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_D = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_F = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_8 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_3 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_4 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_13 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_11 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_12 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_0 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
+            elsif ((((ap_const_lv5_10 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_5 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_6 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_7 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_A = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_B = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_C = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_D = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_F = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_8 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_3 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_4 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_13 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_11 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_12 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_0 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
                 data_in_notify_notif <= ap_const_lv1_0;
             end if; 
         end if;
@@ -183,7 +183,7 @@ begin
         elsif (ap_clk'event and ap_clk =  '1') then
             if ((((ap_const_lv5_11 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_12 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
                 events_out_notify_re <= ap_const_lv1_1;
-            elsif ((((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_10 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_5 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_6 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_7 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_A = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_B = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_C = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_D = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_F = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_8 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_3 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_4 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_13 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_1 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_0 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
+            elsif ((((ap_const_lv5_10 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_1 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_5 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_6 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_7 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_A = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_B = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_C = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_D = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_F = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_8 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_3 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_4 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_13 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_0 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
                 events_out_notify_re <= ap_const_lv1_0;
             end if; 
         end if;
@@ -211,7 +211,7 @@ begin
                 txd_bit_reg <= ap_const_lv1_0;
             elsif (((ap_const_lv5_8 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1))) then 
                 txd_bit_reg <= tmp_10_tmp_4_fu_335_p3;
-            elsif ((((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
+            elsif ((((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
                 txd_bit_reg <= ap_const_lv1_1;
             elsif ((((ap_const_lv5_5 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_6 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_7 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_A = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_B = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_C = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_D = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_F = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
                 txd_bit_reg <= grp_get_data_bit_fu_224_ap_return;
@@ -227,9 +227,9 @@ begin
         if (ap_rst = '1') then
             txd_notify_reg <= ap_const_lv1_0;
         elsif (ap_clk'event and ap_clk =  '1') then
-            if ((((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_10 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_5 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_6 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_7 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_A = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_B = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_C = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_D = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_F = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_8 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_0 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
+            if ((((ap_const_lv5_10 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_5 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_6 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_7 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_A = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_B = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_C = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_D = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_F = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_8 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_0 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_9 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_E = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
                 txd_notify_reg <= ap_const_lv1_1;
-            elsif ((((ap_const_lv5_3 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_4 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_11 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_12 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_1 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
+            elsif ((((ap_const_lv5_1 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_2 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_3 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_4 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_11 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)) or ((ap_const_lv5_12 = active_operation_rea_read_fu_140_p2) and (ap_const_logic_1 = ap_CS_fsm_state1)))) then 
                 txd_notify_reg <= ap_const_lv1_0;
             end if; 
         end if;
@@ -247,6 +247,7 @@ begin
     end process;
     active_operation_rea_read_fu_140_p2 <= active_operation;
     ap_CS_fsm_state1 <= ap_CS_fsm(0);
+    data_V <= data_reg_V;
     data_in_notify_notify <= data_in_notify_notif(0);
     data_in_notify_sig <= data_in_notify_sig_r(0);
     events_out_notify <= events_out_notify_re(0);
@@ -279,11 +280,10 @@ begin
         end if; 
     end process;
 
-    out_data_V <= data_reg_V;
-    out_txd_bit <= txd_bit_reg(0);
     tmp_10_tmp_4_fu_335_p3 <= 
         tmp_5_fu_329_p2 when (config_in_sig_odd_parity(0) = '1') else 
         tmp_4_get_even_parity_fu_207_ap_return;
     tmp_5_fu_329_p2 <= (tmp_4_get_even_parity_fu_207_ap_return xor ap_const_lv1_1);
+    txd_bit <= txd_bit_reg(0);
     txd_notify <= txd_notify_reg(0);
 end behav;

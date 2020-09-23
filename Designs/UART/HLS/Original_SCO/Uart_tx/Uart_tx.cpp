@@ -1,14 +1,14 @@
 #include "ap_int.h"
 #include "Uart_tx_functions.h"
-#include "Uart_tx_data_Types.h"
+#include "Uart_tx_data_types.h"
 
 void Uart_tx_operations(
-	config_t config_in_sig,
 	data_t data_in_sig,
+	config_t config_in_sig,
 	bool &data_in_notify_sig,
 	tx_events_t &events_out_sig,
-	bool &out_txd_bit,
-	ap_uint<32> &out_data,
+	ap_uint<32> &data,
+	bool &txd_bit,
 	bool &data_in_notify_notify,
 	bool &events_out_notify,
 	bool &txd_notify,
@@ -17,19 +17,19 @@ void Uart_tx_operations(
 {
 	static bool data_in_notify_sig_reg = false;
 	static tx_events_t events_out_sig_reg = {false};
+	static ap_uint<32> data_reg = (ap_uint<32>)0;
 	static bool txd_bit_reg = true;
-	static ap_uint<32> data_reg = 0;
 	static bool data_in_notify_notify_reg = false;
 	static bool events_out_notify_reg = false;
 	static bool txd_notify_reg = false;
 
-	bool txd_bit_tmp = txd_bit_reg;
 	ap_uint<32> data_tmp = data_reg;
+	bool txd_bit_tmp = txd_bit_reg;
 
 	data_in_notify_sig = data_in_notify_sig_reg;
 	events_out_sig = events_out_sig_reg;
-	out_txd_bit = txd_bit_reg;
-	out_data = data_reg;
+	data = data_reg;
+	txd_bit = txd_bit_reg;
 	data_in_notify_notify = data_in_notify_notify_reg;
 	events_out_notify = events_out_notify_reg;
 	txd_notify = txd_notify_reg;
@@ -49,7 +49,7 @@ void Uart_tx_operations(
 		txd_notify_reg = false;
 		break;
 	case IDLE_1_2:
-		data_reg = 0;
+		data_reg = (ap_uint<32>)0;
 		txd_bit_reg = true;
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
@@ -66,19 +66,19 @@ void Uart_tx_operations(
 		txd_notify_reg = false;
 		break;
 	case TRANSMITTING_DATA_FIVE_9_11:
-		txd_bit_reg = get_data_bit(data_tmp, 6);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)6);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
 		break;
 	case TRANSMITTING_DATA_FOUR_8_10:
-		txd_bit_reg = get_data_bit(data_tmp, 5);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)5);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
 		break;
 	case TRANSMITTING_DATA_ONE_5_7:
-		txd_bit_reg = get_data_bit(data_tmp, 2);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)2);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
@@ -96,25 +96,25 @@ void Uart_tx_operations(
 		txd_notify_reg = true;
 		break;
 	case TRANSMITTING_DATA_SIX_10_12:
-		txd_bit_reg = get_data_bit(data_tmp, 7);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)7);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
 		break;
 	case TRANSMITTING_DATA_THREE_7_9:
-		txd_bit_reg = get_data_bit(data_tmp, 4);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)4);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
 		break;
 	case TRANSMITTING_DATA_TWO_6_8:
-		txd_bit_reg = get_data_bit(data_tmp, 3);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)3);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
 		break;
 	case TRANSMITTING_DATA_ZERO_4_6:
-		txd_bit_reg = get_data_bit(data_tmp, 1);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)1);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
@@ -126,7 +126,7 @@ void Uart_tx_operations(
 		txd_notify_reg = true;
 		break;
 	case TRANSMITTING_START_3_5:
-		txd_bit_reg = get_data_bit(data_tmp, 0);
+		txd_bit_reg = get_data_bit(data_tmp, (ap_uint<32>)0);
 		data_in_notify_notify_reg = false;
 		events_out_notify_reg = false;
 		txd_notify_reg = true;
