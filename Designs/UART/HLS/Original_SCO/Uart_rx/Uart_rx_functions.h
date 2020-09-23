@@ -2,7 +2,7 @@
 #define FUNCTIONS_H
 
 #include "ap_int.h"
-#include "Uart_rx_data_Types.h"
+#include "Uart_rx_data_types.h"
 
 bool parity_not_correct(ap_uint<32> data, bool odd_parity, bool parity_bit);
 ap_uint<32> update_data(ap_uint<32> data, ap_uint<32> data_count, bool rx_bit);

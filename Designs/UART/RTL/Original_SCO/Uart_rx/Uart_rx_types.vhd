@@ -45,7 +45,6 @@ package Uart_rx_types is
 	constant op_IDLE_1_7 : Uart_rx_operation_t := "100000";
 	constant op_state_wait : Uart_rx_operation_t := "100001";
 
-	-- Enum Types
 
 	-- Compound Types
 	type config_t is record
@@ -53,17 +52,15 @@ package Uart_rx_types is
 		parity: std_logic;
 		two_stop_bits: std_logic;
 	end record;
-	type data_t is record
-		data: std_logic_vector(31 downto 0);
-		valid: std_logic;
-	end record;
 	type rx_events_t is record
 		error_src: std_logic_vector(31 downto 0);
 		ready: std_logic;
 		timeout: std_logic;
 	end record;
-
-	-- Array Types
+	type data_t is record
+		data: std_logic_vector(31 downto 0);
+		valid: std_logic;
+	end record;
 
 	-- Constants
 	constant ERROR_OVERRUN_MASK: std_logic_vector(31 downto 0) := x"00000001";
