@@ -4,7 +4,7 @@ OLS_TEST_HOME="/import/home/deutschmann/Operation-Level-Synthesis/Test"
 
 DESCAM="/import/home/deutschmann/DeSCAM/bin/DESCAM"
 ONESPIN="/import/public/common/onespin/latest/bin/onespin"
-VIVADO_HLS="/import/public/common/Xilinx/Vivado/2018.2/bin/vivado_hls"
+VIVADO_HLS="/import/public/common/Xilinx/Vivado/2020.1/bin/vivado_hls"
 
 cd $OLS_TEST_HOME
 
