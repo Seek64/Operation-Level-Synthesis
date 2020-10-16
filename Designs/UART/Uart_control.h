@@ -227,9 +227,9 @@ void Uart_control::fsm()
 
 
         // Combinational
-        tx_control_out_msg.cts    = cts_internal && HWFC(frame_config);
+//        tx_control_out_msg.cts    = cts_internal && HWFC(frame_config);
 
-        rts_internal = (!ENABLE_SET(enable) || (HWFC(frame_config) && !rx_active_out_msg)) ? RTS_DEACTIVATED : RTS_ACTIVATED;
+//        rts_internal = (!ENABLE_SET(enable) || (HWFC(frame_config) && !rx_active_out_msg)) ? RTS_DEACTIVATED : RTS_ACTIVATED;
         config_msg.parity        = PARITY(frame_config);
         config_msg.two_stop_bits = STOP(frame_config);
         config_msg.odd_parity    = ODD_PARITY(frame_config);
