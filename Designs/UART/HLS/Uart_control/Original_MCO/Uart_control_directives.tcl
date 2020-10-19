@@ -1,0 +1,28 @@
+config_rtl -reset all -reset_async -reset_level high
+config_schedule -effort high -relax_ii_for_timing=0 -verbose=0
+config_bind -effort high
+config_interface -trim_dangling_port
+set_directive_interface -mode ap_ctrl_hs operations
+set_directive_interface -mode ap_vld Uart_control_operations bus_out_sig
+set_directive_interface -mode ap_vld Uart_control_operations events_out_sig
+set_directive_interface -mode ap_vld Uart_control_operations rts_out_sig
+set_directive_interface -mode ap_vld Uart_control_operations rx_active_out_sig
+set_directive_interface -mode ap_vld Uart_control_operations rx_config_out_sig
+set_directive_interface -mode ap_vld Uart_control_operations tx_config_out_sig
+set_directive_interface -mode ap_vld Uart_control_operations tx_control_out_sig
+set_directive_interface -mode ap_vld Uart_control_operations events_out_notify
+set_directive_interface -mode ap_vld Uart_control_operations out_rx_active_out_msg
+set_directive_interface -mode ap_vld Uart_control_operations out_tx_control_out_msg
+set_directive_interface -mode ap_vld Uart_control_operations out_frame_config
+set_directive_interface -mode ap_vld Uart_control_operations out_enable
+set_directive_interface -mode ap_vld Uart_control_operations out_error_src
+set_directive_interface -mode ap_vld Uart_control_operations out_rts_internal
+set_directive_allocation -limit 1 -type function Uart_control_operations CONFIG_MASK
+set_directive_allocation -limit 1 -type function Uart_control_operations ENABLE_MASK
+set_directive_allocation -limit 1 -type function Uart_control_operations ENABLE_SET
+set_directive_allocation -limit 1 -type function Uart_control_operations ERROR_MASK
+set_directive_allocation -limit 1 -type function Uart_control_operations HWFC
+set_directive_allocation -limit 1 -type function Uart_control_operations ODD_PARITY
+set_directive_allocation -limit 1 -type function Uart_control_operations PARITY
+set_directive_allocation -limit 1 -type function Uart_control_operations STOP
+set_directive_allocation -limit 1 -type function Uart_control_operations TASK_MASK
