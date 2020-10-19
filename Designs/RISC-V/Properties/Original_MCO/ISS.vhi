@@ -1,6 +1,3 @@
-macro t_min : unsigned := 1; end macro;
-macro t_max : unsigned := 7; end macro;
-
 -- OPERATIONS --
 property reset is
 assume:
@@ -727,3 +724,5 @@ prove:
 	at t+1: toMemoryPort_notify = false;
 	at t+1: toRegsPort_notify = false;
 end property;
+
+

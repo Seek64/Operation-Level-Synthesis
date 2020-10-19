@@ -27,11 +27,79 @@ package ISS_types is
 	constant op_state_wait : ISS_operation_t := "1110";
 
 	-- Enum Types
-	type ME_MaskType is (MT_B, MT_BU, MT_H, MT_HU, MT_W, MT_X);
-	type ME_AccessType is (ME_RD, ME_WR, ME_X);
-	type EncType is (ENC_B, ENC_ERR, ENC_I_I, ENC_I_J, ENC_I_L, ENC_J, ENC_R, ENC_S, ENC_U);
-	type InstrType is (INSTR_ADD, INSTR_ADDI, INSTR_AND, INSTR_ANDI, INSTR_AUIPC, INSTR_BEQ, INSTR_BGE, INSTR_BGEU, INSTR_BLT, INSTR_BLTU, INSTR_BNE, INSTR_JAL, INSTR_JALR, INSTR_LB, INSTR_LBU, INSTR_LH, INSTR_LHU, INSTR_LUI, INSTR_LW, INSTR_OR, INSTR_ORI, INSTR_SB, INSTR_SH, INSTR_SLL, INSTR_SLLI, INSTR_SLT, INSTR_SLTI, INSTR_SLTU, INSTR_SLTUI, INSTR_SRA, INSTR_SRAI, INSTR_SRL, INSTR_SRLI, INSTR_SUB, INSTR_SW, INSTR_UNKNOWN, INSTR_XOR, INSTR_XORI);
-	type ALUfuncType is (ALU_ADD, ALU_AND, ALU_COPY1, ALU_OR, ALU_SLL, ALU_SLT, ALU_SLTU, ALU_SRA, ALU_SRL, ALU_SUB, ALU_X, ALU_XOR);
+	subtype ME_MaskType is std_logic_vector(2 downto 0);
+	constant MT_B : ME_MaskType := "000";
+	constant MT_BU : ME_MaskType := "001";
+	constant MT_H : ME_MaskType := "010";
+	constant MT_HU : ME_MaskType := "011";
+	constant MT_W : ME_MaskType := "100";
+	constant MT_X : ME_MaskType := "101";
+	subtype ME_AccessType is std_logic_vector(1 downto 0);
+	constant ME_RD : ME_AccessType := "00";
+	constant ME_WR : ME_AccessType := "01";
+	constant ME_X : ME_AccessType := "10";
+	subtype EncType is std_logic_vector(3 downto 0);
+	constant ENC_B : EncType := "0000";
+	constant ENC_ERR : EncType := "0001";
+	constant ENC_I_I : EncType := "0010";
+	constant ENC_I_J : EncType := "0011";
+	constant ENC_I_L : EncType := "0100";
+	constant ENC_J : EncType := "0101";
+	constant ENC_R : EncType := "0110";
+	constant ENC_S : EncType := "0111";
+	constant ENC_U : EncType := "1000";
+	subtype InstrType is std_logic_vector(5 downto 0);
+	constant INSTR_ADD : InstrType := "000000";
+	constant INSTR_ADDI : InstrType := "000001";
+	constant INSTR_AND : InstrType := "000010";
+	constant INSTR_ANDI : InstrType := "000011";
+	constant INSTR_AUIPC : InstrType := "000100";
+	constant INSTR_BEQ : InstrType := "000101";
+	constant INSTR_BGE : InstrType := "000110";
+	constant INSTR_BGEU : InstrType := "000111";
+	constant INSTR_BLT : InstrType := "001000";
+	constant INSTR_BLTU : InstrType := "001001";
+	constant INSTR_BNE : InstrType := "001010";
+	constant INSTR_JAL : InstrType := "001011";
+	constant INSTR_JALR : InstrType := "001100";
+	constant INSTR_LB : InstrType := "001101";
+	constant INSTR_LBU : InstrType := "001110";
+	constant INSTR_LH : InstrType := "001111";
+	constant INSTR_LHU : InstrType := "010000";
+	constant INSTR_LUI : InstrType := "010001";
+	constant INSTR_LW : InstrType := "010010";
+	constant INSTR_OR : InstrType := "010011";
+	constant INSTR_ORI : InstrType := "010100";
+	constant INSTR_SB : InstrType := "010101";
+	constant INSTR_SH : InstrType := "010110";
+	constant INSTR_SLL : InstrType := "010111";
+	constant INSTR_SLLI : InstrType := "011000";
+	constant INSTR_SLT : InstrType := "011001";
+	constant INSTR_SLTI : InstrType := "011010";
+	constant INSTR_SLTU : InstrType := "011011";
+	constant INSTR_SLTUI : InstrType := "011100";
+	constant INSTR_SRA : InstrType := "011101";
+	constant INSTR_SRAI : InstrType := "011110";
+	constant INSTR_SRL : InstrType := "011111";
+	constant INSTR_SRLI : InstrType := "100000";
+	constant INSTR_SUB : InstrType := "100001";
+	constant INSTR_SW : InstrType := "100010";
+	constant INSTR_UNKNOWN : InstrType := "100011";
+	constant INSTR_XOR : InstrType := "100100";
+	constant INSTR_XORI : InstrType := "100101";
+	subtype ALUfuncType is std_logic_vector(3 downto 0);
+	constant ALU_ADD : ALUfuncType := "0000";
+	constant ALU_AND : ALUfuncType := "0001";
+	constant ALU_COPY1 : ALUfuncType := "0010";
+	constant ALU_OR : ALUfuncType := "0011";
+	constant ALU_SLL : ALUfuncType := "0100";
+	constant ALU_SLT : ALUfuncType := "0101";
+	constant ALU_SLTU : ALUfuncType := "0110";
+	constant ALU_SRA : ALUfuncType := "0111";
+	constant ALU_SRL : ALUfuncType := "1000";
+	constant ALU_SUB : ALUfuncType := "1001";
+	constant ALU_X : ALUfuncType := "1010";
+	constant ALU_XOR : ALUfuncType := "1011";
 
 	-- Compound Types
 	type MEtoCU_IF is record
@@ -80,9 +148,5 @@ package ISS_types is
 		reg_file_30: std_logic_vector(31 downto 0);
 		reg_file_31: std_logic_vector(31 downto 0);
 	end record;
-
-	-- Array Types
-
-	-- Constants
 
 end package ISS_types;

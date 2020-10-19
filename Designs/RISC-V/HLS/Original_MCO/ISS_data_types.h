@@ -20,7 +20,6 @@ enum InstrType {INSTR_ADD, INSTR_ADDI, INSTR_AND, INSTR_ANDI, INSTR_AUIPC, INSTR
 
 enum ALUfuncType {ALU_ADD, ALU_AND, ALU_COPY1, ALU_OR, ALU_SLL, ALU_SLT, ALU_SLTU, ALU_SRA, ALU_SRL, ALU_SUB, ALU_X, ALU_XOR};
 
-
 // Compound Types
 struct MEtoCU_IF {
 	ap_uint<32> loadedData;
@@ -72,7 +71,5 @@ struct RegfileType {
 	ap_uint<32> reg_file_31;
 };
 
-
-// Constants
 
 #endif //DATA_TYPES_H

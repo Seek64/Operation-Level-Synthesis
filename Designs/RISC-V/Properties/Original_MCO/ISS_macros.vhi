@@ -69,4 +69,5 @@ macro state_4 : boolean := active_state = st_state_4 and (ready_sig = '1' or idl
 macro state_5 : boolean := active_state = st_state_5 and (ready_sig = '1' or idle_sig = '1') end macro;
 macro state_6 : boolean := active_state = st_state_6 and (ready_sig = '1' or idle_sig = '1') end macro;
 
-
+macro t_min : unsigned := 2; end macro;
+macro t_max : unsigned := 7; end macro;

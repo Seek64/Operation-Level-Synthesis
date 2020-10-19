@@ -6,8 +6,8 @@ use work.ISS_types.all;
 
 entity ISS_module is
 port(
-	fromRegsPort_sig: in RegfileType;
 	fromMemoryPort_sig: in MEtoCU_IF;
+	fromRegsPort_sig: in RegfileType;
 	toRegsPort_sig: out RegfileWriteType;
 	toMemoryPort_sig: out CUtoME_IF;
 	fromMemoryPort_notify: out std_logic;
@@ -15,8 +15,8 @@ port(
 	toRegsPort_notify: out std_logic;
 	fromMemoryPort_sync: in std_logic;
 	toMemoryPort_sync: in std_logic;
-	clk: in std_logic;
-	rst: in std_logic
+	rst: in std_logic;
+	clk: in std_logic
 );
 end ISS_module;
 
@@ -35,7 +35,6 @@ architecture ISS_arch of ISS_module is
 	signal out_regfileWrite_dstData_vld: std_logic;
 
 	-- Module Inputs
-	signal fromRegsPort_sig_reg_file_21_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_22_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_23_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_24_in: std_logic_vector(31 downto 0);
@@ -66,6 +65,7 @@ architecture ISS_arch of ISS_module is
 	signal fromRegsPort_sig_reg_file_18_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_19_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_20_in: std_logic_vector(31 downto 0);
+	signal fromRegsPort_sig_reg_file_21_in: std_logic_vector(31 downto 0);
 	signal fromMemoryPort_sig_loadedData_in: std_logic_vector(31 downto 0);
 	signal active_operation_in: std_logic_vector(3 downto 0);
 
@@ -80,39 +80,49 @@ architecture ISS_arch of ISS_module is
 	signal toMemoryPort_sig_req_vld: std_logic;
 	signal fromMemoryPort_notify_out: std_logic;
 	signal fromMemoryPort_notify_vld: std_logic;
+	signal fromMemoryPort_notify_reg: std_logic;
 	signal toMemoryPort_notify_out: std_logic;
 	signal toMemoryPort_notify_vld: std_logic;
+	signal toMemoryPort_notify_reg: std_logic;
 	signal toRegsPort_notify_out: std_logic;
 	signal toRegsPort_notify_vld: std_logic;
-	signal fromMemoryPort_notify_reg: std_logic;
-	signal toMemoryPort_notify_reg: std_logic;
 	signal toRegsPort_notify_reg: std_logic;
 
 	-- Handshaking Protocol Signals (Communication between top and operations_inst)
 	signal done_sig: std_logic;
 	signal idle_sig: std_logic;
-	signal start_sig: std_logic;
 	signal ready_sig: std_logic;
+	signal start_sig: std_logic;
 
 	-- Monitor Signals
-	signal active_state: ISS_state_t;
-	signal next_state: ISS_state_t;
 	signal active_operation: ISS_operation_t;
+	signal active_state: ISS_state_t;
 	signal wait_state: std_logic;
+	signal next_state: ISS_state_t;
 
 	-- Functions
+	function bool_to_sl(x : boolean) return std_logic;
 	function getEncType(encodedInstr: std_logic_vector(31 downto 0)) return EncType;
+
+	function bool_to_sl(x : boolean) return std_logic is
+	begin
+  	if x then
+    	return '1';
+  	else
+    	return '0';
+  	end if;
+  end bool_to_sl;
 
 	function getEncType(encodedInstr: std_logic_vector(31 downto 0)) return EncType is
 	begin
-		if (encodedInstr(6 downto 0) = "0110011") then return ENC_R;
-		elsif (encodedInstr(6 downto 0) = "0010011") then return ENC_I_I;
-		elsif (encodedInstr(6 downto 0) = "0000011") then return ENC_I_L;
-		elsif (encodedInstr(6 downto 0) = "1100111") then return ENC_I_J;
-		elsif (encodedInstr(6 downto 0) = "0100011") then return ENC_S;
-		elsif (encodedInstr(6 downto 0) = "1100011") then return ENC_B;
-		elsif ((encodedInstr(6 downto 0) = "0110111") or (encodedInstr(6 downto 0) = "0010111")) then return ENC_U;
-		elsif (encodedInstr(6 downto 0) = "1101111") then return ENC_J;
+		if (bool_to_sl((encodedInstr and x"0000007f") = x"00000033")) = '1' then return ENC_R;
+		elsif (bool_to_sl((encodedInstr and x"0000007f") = x"00000013")) = '1' then return ENC_I_I;
+		elsif (bool_to_sl((encodedInstr and x"0000007f") = x"00000003")) = '1' then return ENC_I_L;
+		elsif (bool_to_sl((encodedInstr and x"0000007f") = x"00000067")) = '1' then return ENC_I_J;
+		elsif (bool_to_sl((encodedInstr and x"0000007f") = x"00000023")) = '1' then return ENC_S;
+		elsif (bool_to_sl((encodedInstr and x"0000007f") = x"00000063")) = '1' then return ENC_B;
+		elsif ((bool_to_sl((encodedInstr and x"0000007f") = x"00000037") or bool_to_sl((encodedInstr and x"0000007f") = x"00000017"))) = '1' then return ENC_U;
+		elsif (bool_to_sl((encodedInstr and x"0000007f") = x"0000006f")) = '1' then return ENC_J;
 		else return ENC_ERR;
 		end if;
 	end getEncType;
@@ -120,13 +130,12 @@ architecture ISS_arch of ISS_module is
 
 	component ISS_operations is
 	port(
-		ap_clk: in std_logic;
 		ap_rst: in std_logic;
+		ap_clk: in std_logic;
 		ap_done: out std_logic;
 		ap_idle: out std_logic;
-		ap_start: in std_logic;
 		ap_ready: out std_logic;
-		fromRegsPort_sig_reg_file_21_V: in std_logic_vector(31 downto 0);
+		ap_start: in std_logic;
 		fromRegsPort_sig_reg_file_22_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_23_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_24_V: in std_logic_vector(31 downto 0);
@@ -157,6 +166,7 @@ architecture ISS_arch of ISS_module is
 		fromRegsPort_sig_reg_file_18_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_19_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_20_V: in std_logic_vector(31 downto 0);
+		fromRegsPort_sig_reg_file_21_V: in std_logic_vector(31 downto 0);
 		fromMemoryPort_sig_loadedData_V: in std_logic_vector(31 downto 0);
 		toMemoryPort_sig_addrIn_V: out std_logic_vector(31 downto 0);
 		toMemoryPort_sig_addrIn_V_ap_vld: out std_logic;
@@ -188,13 +198,12 @@ begin
 
 	operations_inst: ISS_operations
 	port map(
-		ap_clk => clk,
 		ap_rst => rst,
+		ap_clk => clk,
 		ap_done => done_sig,
 		ap_idle => idle_sig,
-		ap_start => start_sig,
 		ap_ready => ready_sig,
-		fromRegsPort_sig_reg_file_21_V => fromRegsPort_sig_reg_file_21_in,
+		ap_start => start_sig,
 		fromRegsPort_sig_reg_file_22_V => fromRegsPort_sig_reg_file_22_in,
 		fromRegsPort_sig_reg_file_23_V => fromRegsPort_sig_reg_file_23_in,
 		fromRegsPort_sig_reg_file_24_V => fromRegsPort_sig_reg_file_24_in,
@@ -225,6 +234,7 @@ begin
 		fromRegsPort_sig_reg_file_18_V => fromRegsPort_sig_reg_file_18_in,
 		fromRegsPort_sig_reg_file_19_V => fromRegsPort_sig_reg_file_19_in,
 		fromRegsPort_sig_reg_file_20_V => fromRegsPort_sig_reg_file_20_in,
+		fromRegsPort_sig_reg_file_21_V => fromRegsPort_sig_reg_file_21_in,
 		fromMemoryPort_sig_loadedData_V => fromMemoryPort_sig_loadedData_in,
 		toMemoryPort_sig_addrIn_V => toMemoryPort_sig_addrIn_out,
 		toMemoryPort_sig_addrIn_V_ap_vld => toMemoryPort_sig_addrIn_vld,
@@ -256,7 +266,7 @@ begin
 	begin
 		case active_state is
 		when st_state_1 =>
-			if ((toMemoryPort_sync = '1')) then 
+			if (toMemoryPort_sync) = '1' then 
 				active_operation <= op_state_1_1;
 				next_state <= st_state_2;
 				wait_state <= '0';
@@ -264,39 +274,39 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_2 =>
-			if ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) then 
+			if (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) = '1' then 
 				active_operation <= op_state_2_2;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) = '1' then 
 				active_operation <= op_state_2_3;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) = '1' then 
 				active_operation <= op_state_2_4;
 				next_state <= st_state_3;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) = '1' then 
 				active_operation <= op_state_2_5;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) = '1' then 
 				active_operation <= op_state_2_6;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) = '1' then 
 				active_operation <= op_state_2_7;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) = '1' then 
 				active_operation <= op_state_2_8;
 				next_state <= st_state_5;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and (getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J)) then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J)) = '1' then 
 				active_operation <= op_state_2_9;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif ((fromMemoryPort_sync = '1') and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) and not((getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J))) then 
+			elsif (fromMemoryPort_sync and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J))) = '1' then 
 				active_operation <= op_state_2_10;
 				next_state <= st_state_1;
 				wait_state <= '0';
@@ -304,7 +314,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_3 =>
-			if ((toMemoryPort_sync = '1')) then 
+			if (toMemoryPort_sync) = '1' then 
 				active_operation <= op_state_3_11;
 				next_state <= st_state_4;
 				wait_state <= '0';
@@ -312,7 +322,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_4 =>
-			if ((fromMemoryPort_sync = '1')) then 
+			if (fromMemoryPort_sync) = '1' then 
 				active_operation <= op_state_4_12;
 				next_state <= st_state_1;
 				wait_state <= '0';
@@ -320,7 +330,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_5 =>
-			if ((toMemoryPort_sync = '1')) then 
+			if (toMemoryPort_sync) = '1' then 
 				active_operation <= op_state_5_13;
 				next_state <= st_state_6;
 				wait_state <= '0';
@@ -328,7 +338,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_6 =>
-			if ((fromMemoryPort_sync = '1')) then 
+			if (fromMemoryPort_sync) = '1' then 
 				active_operation <= op_state_6_14;
 				next_state <= st_state_1;
 				wait_state <= '0';
@@ -362,7 +372,7 @@ begin
 		if (rst = '1') then
 			toMemoryPort_sig.mask <= MT_W;
 		elsif (toMemoryPort_sig_mask_vld = '1') then
-			toMemoryPort_sig.mask <= ME_MaskType'val(to_integer(unsigned(toMemoryPort_sig_mask_out)));
+			toMemoryPort_sig.mask <= toMemoryPort_sig_mask_out;
 		end if;
 	end process;
 
@@ -371,7 +381,7 @@ begin
 		if (rst = '1') then
 			toMemoryPort_sig.req <= ME_RD;
 		elsif (toMemoryPort_sig_req_vld = '1') then
-			toMemoryPort_sig.req <= ME_AccessType'val(to_integer(unsigned(toMemoryPort_sig_req_out)));
+			toMemoryPort_sig.req <= toMemoryPort_sig_req_out;
 		end if;
 	end process;
 
@@ -392,7 +402,7 @@ begin
 		regfileWrite.dst <= in_regfileWrite_dst when '0',
 			out_regfileWrite_dst when others;
 
-	process(clk ,rst)
+	process(clk, rst)
 	begin
 		if (rst = '1') then
 			in_pcReg <= x"00000000";
@@ -401,7 +411,7 @@ begin
 		end if;
 	end process;
 
-	process(clk ,rst)
+	process(clk, rst)
 	begin
 		if (rst = '1') then
 			in_regfileWrite_dst <= x"00000000";
@@ -474,7 +484,6 @@ begin
 				start_sig <= '1';
 				active_state <= next_state;
 				active_operation_in <= active_operation;
-				fromRegsPort_sig_reg_file_21_in <= fromRegsPort_sig.reg_file_21;
 				fromRegsPort_sig_reg_file_22_in <= fromRegsPort_sig.reg_file_22;
 				fromRegsPort_sig_reg_file_23_in <= fromRegsPort_sig.reg_file_23;
 				fromRegsPort_sig_reg_file_24_in <= fromRegsPort_sig.reg_file_24;
@@ -505,6 +514,7 @@ begin
 				fromRegsPort_sig_reg_file_18_in <= fromRegsPort_sig.reg_file_18;
 				fromRegsPort_sig_reg_file_19_in <= fromRegsPort_sig.reg_file_19;
 				fromRegsPort_sig_reg_file_20_in <= fromRegsPort_sig.reg_file_20;
+				fromRegsPort_sig_reg_file_21_in <= fromRegsPort_sig.reg_file_21;
 				fromMemoryPort_sig_loadedData_in <= fromMemoryPort_sig.loadedData;
 			elsif ((idle_sig = '1' or  ready_sig = '1') and wait_state = '1') then
 				start_sig <= '0';
