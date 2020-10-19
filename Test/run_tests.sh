@@ -21,8 +21,8 @@ read -r framer_result<"test_result.txt"
 rm -f test_result.txt
 
 # Synthesize UART_TX as SCO
-$DESCAM -f ../Designs/UART/Uart_tx.h -o . -PrintITL --hls-sco
-$DESCAM -f ../Designs/UART/Uart_tx.h -o . -PrintHLS --sco
+$DESCAM -f ../Designs/UART/PPA/Uart_tx.h -o . -PrintITL --hls-sco
+$DESCAM -f ../Designs/UART/PPA/Uart_tx.h -o . -PrintHLS --sco
 cd PrintHLS
 $VIVADO_HLS Uart_tx_run_hls.tcl
 cd ..
@@ -33,8 +33,8 @@ read -r Uart_tx_result<"test_result.txt"
 rm -f test_result.txt
 
 # Synthesize UART_RX as SCO
-$DESCAM -f ../Designs/UART/Uart_rx.h -o . -PrintITL --hls-sco
-$DESCAM -f ../Designs/UART/Uart_rx.h -o . -PrintHLS --sco
+$DESCAM -f ../Designs/UART/PPA/Uart_rx.h -o . -PrintITL --hls-sco
+$DESCAM -f ../Designs/UART/PPA/Uart_rx.h -o . -PrintHLS --sco
 cd PrintHLS
 $VIVADO_HLS Uart_rx_run_hls.tcl
 cd ..
