@@ -17,7 +17,6 @@ port (
     ap_done : OUT STD_LOGIC;
     ap_idle : OUT STD_LOGIC;
     ap_ready : OUT STD_LOGIC;
-    fromMemoryPort_sig_loadedData_V : IN STD_LOGIC_VECTOR (31 downto 0);
     fromRegsPort_sig_reg_file_01_V : IN STD_LOGIC_VECTOR (31 downto 0);
     fromRegsPort_sig_reg_file_02_V : IN STD_LOGIC_VECTOR (31 downto 0);
     fromRegsPort_sig_reg_file_03_V : IN STD_LOGIC_VECTOR (31 downto 0);
@@ -49,6 +48,7 @@ port (
     fromRegsPort_sig_reg_file_29_V : IN STD_LOGIC_VECTOR (31 downto 0);
     fromRegsPort_sig_reg_file_30_V : IN STD_LOGIC_VECTOR (31 downto 0);
     fromRegsPort_sig_reg_file_31_V : IN STD_LOGIC_VECTOR (31 downto 0);
+    fromMemoryPort_sig_loadedData_V : IN STD_LOGIC_VECTOR (31 downto 0);
     toMemoryPort_sig_addrIn_V : OUT STD_LOGIC_VECTOR (31 downto 0);
     toMemoryPort_sig_addrIn_V_ap_vld : OUT STD_LOGIC;
     toMemoryPort_sig_dataIn_V : OUT STD_LOGIC_VECTOR (31 downto 0);
@@ -57,14 +57,14 @@ port (
     toMemoryPort_sig_mask_ap_vld : OUT STD_LOGIC;
     toMemoryPort_sig_req : OUT STD_LOGIC_VECTOR (1 downto 0);
     toMemoryPort_sig_req_ap_vld : OUT STD_LOGIC;
-    in_pcReg_V : IN STD_LOGIC_VECTOR (31 downto 0);
     in_regfileWrite_dst_V : IN STD_LOGIC_VECTOR (31 downto 0);
-    out_pcReg_V : OUT STD_LOGIC_VECTOR (31 downto 0);
-    out_pcReg_V_ap_vld : OUT STD_LOGIC;
+    in_pcReg_V : IN STD_LOGIC_VECTOR (31 downto 0);
     out_regfileWrite_dst_V : OUT STD_LOGIC_VECTOR (31 downto 0);
     out_regfileWrite_dst_V_ap_vld : OUT STD_LOGIC;
     out_regfileWrite_dstData_V : OUT STD_LOGIC_VECTOR (31 downto 0);
     out_regfileWrite_dstData_V_ap_vld : OUT STD_LOGIC;
+    out_pcReg_V : OUT STD_LOGIC_VECTOR (31 downto 0);
+    out_pcReg_V_ap_vld : OUT STD_LOGIC;
     fromMemoryPort_notify : OUT STD_LOGIC;
     fromMemoryPort_notify_ap_vld : OUT STD_LOGIC;
     toMemoryPort_notify : OUT STD_LOGIC;

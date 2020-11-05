@@ -34,10 +34,12 @@ package ISS_types is
 	constant MT_HU : ME_MaskType := "011";
 	constant MT_W : ME_MaskType := "100";
 	constant MT_X : ME_MaskType := "101";
+
 	subtype ME_AccessType is std_logic_vector(1 downto 0);
 	constant ME_RD : ME_AccessType := "00";
 	constant ME_WR : ME_AccessType := "01";
 	constant ME_X : ME_AccessType := "10";
+
 	subtype EncType is std_logic_vector(3 downto 0);
 	constant ENC_B : EncType := "0000";
 	constant ENC_ERR : EncType := "0001";
@@ -48,6 +50,7 @@ package ISS_types is
 	constant ENC_R : EncType := "0110";
 	constant ENC_S : EncType := "0111";
 	constant ENC_U : EncType := "1000";
+
 	subtype InstrType is std_logic_vector(5 downto 0);
 	constant INSTR_ADD : InstrType := "000000";
 	constant INSTR_ADDI : InstrType := "000001";
@@ -87,6 +90,7 @@ package ISS_types is
 	constant INSTR_UNKNOWN : InstrType := "100011";
 	constant INSTR_XOR : InstrType := "100100";
 	constant INSTR_XORI : InstrType := "100101";
+
 	subtype ALUfuncType is std_logic_vector(3 downto 0);
 	constant ALU_ADD : ALUfuncType := "0000";
 	constant ALU_AND : ALUfuncType := "0001";
@@ -101,20 +105,24 @@ package ISS_types is
 	constant ALU_X : ALUfuncType := "1010";
 	constant ALU_XOR : ALUfuncType := "1011";
 
+
 	-- Compound Types
 	type MEtoCU_IF is record
 		loadedData: std_logic_vector(31 downto 0);
 	end record;
+
 	type CUtoME_IF is record
 		addrIn: std_logic_vector(31 downto 0);
 		dataIn: std_logic_vector(31 downto 0);
 		mask: ME_MaskType;
 		req: ME_AccessType;
 	end record;
+
 	type RegfileWriteType is record
 		dst: std_logic_vector(31 downto 0);
 		dstData: std_logic_vector(31 downto 0);
 	end record;
+
 	type RegfileType is record
 		reg_file_01: std_logic_vector(31 downto 0);
 		reg_file_02: std_logic_vector(31 downto 0);
@@ -148,5 +156,6 @@ package ISS_types is
 		reg_file_30: std_logic_vector(31 downto 0);
 		reg_file_31: std_logic_vector(31 downto 0);
 	end record;
+
 
 end package ISS_types;

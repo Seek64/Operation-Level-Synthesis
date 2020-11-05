@@ -8,8 +8,8 @@ set_directive_interface -mode ap_vld ISS_operations toRegsPort_sig
 set_directive_interface -mode ap_vld ISS_operations fromMemoryPort_notify
 set_directive_interface -mode ap_vld ISS_operations toMemoryPort_notify
 set_directive_interface -mode ap_vld ISS_operations toRegsPort_notify
-set_directive_interface -mode ap_vld ISS_operations out_pcReg
 set_directive_interface -mode ap_vld ISS_operations out_regfileWrite
+set_directive_interface -mode ap_vld ISS_operations out_pcReg
 set_directive_allocation -limit 1 -type function ISS_operations branchPCcalculation
 set_directive_allocation -limit 1 -type function ISS_operations getALUfunc
 set_directive_allocation -limit 1 -type function ISS_operations getALUresult

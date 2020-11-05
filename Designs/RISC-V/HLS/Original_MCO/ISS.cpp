@@ -3,13 +3,13 @@
 #include "ISS_data_types.h"
 
 void ISS_operations(
-	MEtoCU_IF fromMemoryPort_sig,
 	RegfileType fromRegsPort_sig,
+	MEtoCU_IF fromMemoryPort_sig,
 	CUtoME_IF &toMemoryPort_sig,
-	ap_uint<32> in_pcReg,
 	RegfileWriteType in_regfileWrite,
-	ap_uint<32> &out_pcReg,
+	ap_uint<32> in_pcReg,
 	RegfileWriteType &out_regfileWrite,
+	ap_uint<32> &out_pcReg,
 	bool &fromMemoryPort_notify,
 	bool &toMemoryPort_notify,
 	bool &toRegsPort_notify,

@@ -6,8 +6,8 @@ use work.ISS_types.all;
 
 entity ISS_module is
 port(
-	fromMemoryPort_sig: in MEtoCU_IF;
 	fromRegsPort_sig: in RegfileType;
+	fromMemoryPort_sig: in MEtoCU_IF;
 	toRegsPort_sig: out RegfileWriteType;
 	toMemoryPort_sig: out CUtoME_IF;
 	fromMemoryPort_notify: out std_logic;
@@ -23,8 +23,8 @@ end ISS_module;
 architecture ISS_arch of ISS_module is
 
 	-- Internal Registers
-	signal pcReg: std_logic_vector(31 downto 0);
 	signal regfileWrite: RegfileWriteType;
+	signal pcReg: std_logic_vector(31 downto 0);
 	signal in_pcReg: std_logic_vector(31 downto 0);
 	signal in_regfileWrite_dst: std_logic_vector(31 downto 0);
 	signal out_pcReg: std_logic_vector(31 downto 0);
@@ -35,6 +35,7 @@ architecture ISS_arch of ISS_module is
 	signal out_regfileWrite_dstData_vld: std_logic;
 
 	-- Module Inputs
+	signal fromRegsPort_sig_reg_file_21_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_22_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_23_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_24_in: std_logic_vector(31 downto 0);
@@ -65,11 +66,12 @@ architecture ISS_arch of ISS_module is
 	signal fromRegsPort_sig_reg_file_18_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_19_in: std_logic_vector(31 downto 0);
 	signal fromRegsPort_sig_reg_file_20_in: std_logic_vector(31 downto 0);
-	signal fromRegsPort_sig_reg_file_21_in: std_logic_vector(31 downto 0);
 	signal fromMemoryPort_sig_loadedData_in: std_logic_vector(31 downto 0);
 	signal active_operation_in: std_logic_vector(3 downto 0);
 
 	-- Module Outputs
+	signal toRegsPort_sig_reg : RegfileWriteType;
+	signal toMemoryPort_sig_reg : CUtoME_IF;
 	signal toMemoryPort_sig_addrIn_out: std_logic_vector(31 downto 0);
 	signal toMemoryPort_sig_addrIn_vld: std_logic;
 	signal toMemoryPort_sig_dataIn_out: std_logic_vector(31 downto 0);
@@ -95,10 +97,10 @@ architecture ISS_arch of ISS_module is
 	signal start_sig: std_logic;
 
 	-- Monitor Signals
-	signal active_operation: ISS_operation_t;
-	signal active_state: ISS_state_t;
 	signal wait_state: std_logic;
 	signal next_state: ISS_state_t;
+	signal active_state: ISS_state_t;
+	signal active_operation: ISS_operation_t;
 
 	-- Functions
 	function bool_to_sl(x : boolean) return std_logic;
@@ -136,6 +138,7 @@ architecture ISS_arch of ISS_module is
 		ap_idle: out std_logic;
 		ap_ready: out std_logic;
 		ap_start: in std_logic;
+		fromRegsPort_sig_reg_file_21_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_22_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_23_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_24_V: in std_logic_vector(31 downto 0);
@@ -166,7 +169,6 @@ architecture ISS_arch of ISS_module is
 		fromRegsPort_sig_reg_file_18_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_19_V: in std_logic_vector(31 downto 0);
 		fromRegsPort_sig_reg_file_20_V: in std_logic_vector(31 downto 0);
-		fromRegsPort_sig_reg_file_21_V: in std_logic_vector(31 downto 0);
 		fromMemoryPort_sig_loadedData_V: in std_logic_vector(31 downto 0);
 		toMemoryPort_sig_addrIn_V: out std_logic_vector(31 downto 0);
 		toMemoryPort_sig_addrIn_V_ap_vld: out std_logic;
@@ -204,6 +206,7 @@ begin
 		ap_idle => idle_sig,
 		ap_ready => ready_sig,
 		ap_start => start_sig,
+		fromRegsPort_sig_reg_file_21_V => fromRegsPort_sig_reg_file_21_in,
 		fromRegsPort_sig_reg_file_22_V => fromRegsPort_sig_reg_file_22_in,
 		fromRegsPort_sig_reg_file_23_V => fromRegsPort_sig_reg_file_23_in,
 		fromRegsPort_sig_reg_file_24_V => fromRegsPort_sig_reg_file_24_in,
@@ -234,7 +237,6 @@ begin
 		fromRegsPort_sig_reg_file_18_V => fromRegsPort_sig_reg_file_18_in,
 		fromRegsPort_sig_reg_file_19_V => fromRegsPort_sig_reg_file_19_in,
 		fromRegsPort_sig_reg_file_20_V => fromRegsPort_sig_reg_file_20_in,
-		fromRegsPort_sig_reg_file_21_V => fromRegsPort_sig_reg_file_21_in,
 		fromMemoryPort_sig_loadedData_V => fromMemoryPort_sig_loadedData_in,
 		toMemoryPort_sig_addrIn_V => toMemoryPort_sig_addrIn_out,
 		toMemoryPort_sig_addrIn_V_ap_vld => toMemoryPort_sig_addrIn_vld,
@@ -262,7 +264,7 @@ begin
 	);
 
 	-- Monitor
-	process (active_state, fromMemoryPort_sync, toMemoryPort_sync, fromMemoryPort_sig.loadedData)
+	process (active_state, toMemoryPort_sync, fromMemoryPort_sync, fromMemoryPort_sig.loadedData)
 	begin
 		case active_state is
 		when st_state_1 =>
@@ -271,6 +273,8 @@ begin
 				next_state <= st_state_2;
 				wait_state <= '0';
 			else
+				active_operation <= op_state_wait;
+				next_state <= st_state_1;
 				wait_state <= '1';
 			end if;
 		when st_state_2 =>
@@ -311,6 +315,8 @@ begin
 				next_state <= st_state_1;
 				wait_state <= '0';
 			else
+				active_operation <= op_state_wait;
+				next_state <= st_state_2;
 				wait_state <= '1';
 			end if;
 		when st_state_3 =>
@@ -319,6 +325,8 @@ begin
 				next_state <= st_state_4;
 				wait_state <= '0';
 			else
+				active_operation <= op_state_wait;
+				next_state <= st_state_3;
 				wait_state <= '1';
 			end if;
 		when st_state_4 =>
@@ -327,6 +335,8 @@ begin
 				next_state <= st_state_1;
 				wait_state <= '0';
 			else
+				active_operation <= op_state_wait;
+				next_state <= st_state_4;
 				wait_state <= '1';
 			end if;
 		when st_state_5 =>
@@ -335,6 +345,8 @@ begin
 				next_state <= st_state_6;
 				wait_state <= '0';
 			else
+				active_operation <= op_state_wait;
+				next_state <= st_state_5;
 				wait_state <= '1';
 			end if;
 		when st_state_6 =>
@@ -343,48 +355,238 @@ begin
 				next_state <= st_state_1;
 				wait_state <= '0';
 			else
+				active_operation <= op_state_wait;
+				next_state <= st_state_6;
 				wait_state <= '1';
 			end if;
 		end case;
 	end process;
 
-	-- Output_Vld Processes
-	process (rst, toMemoryPort_sig_addrIn_vld)
+	-- Output Processes
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toRegsPort_sig_reg.dst <= x"00000000";
+		elsif (clk = '1' and clk'event) then
+			if (out_regfileWrite_dst_vld = '1') then
+				toRegsPort_sig_reg.dst <= out_regfileWrite_dst;
+			end if;
+		end if;
+	end process;
+
+	process (clk, done_sig, out_regfileWrite_dst_vld)
+	begin
+		if (rst = '1') then
+			toRegsPort_sig.dst <= x"00000000";
+		elsif ((done_sig = '1') and (out_regfileWrite_dst_vld = '1')) then
+			toRegsPort_sig.dst <= out_regfileWrite_dst;
+		else
+			toRegsPort_sig.dst <= toRegsPort_sig_reg.dst;
+		end if;
+	end process;
+
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toRegsPort_sig_reg.dstData <= x"00000000";
+		elsif (clk = '1' and clk'event) then
+			if (out_regfileWrite_dstData_vld = '1') then
+				toRegsPort_sig_reg.dstData <= out_regfileWrite_dstData;
+			end if;
+		end if;
+	end process;
+
+	process (clk, done_sig, out_regfileWrite_dstData_vld)
+	begin
+		if (rst = '1') then
+			toRegsPort_sig.dstData <= x"00000000";
+		elsif ((done_sig = '1') and (out_regfileWrite_dstData_vld = '1')) then
+			toRegsPort_sig.dstData <= out_regfileWrite_dstData;
+		else
+			toRegsPort_sig.dstData <= toRegsPort_sig_reg.dstData;
+		end if;
+	end process;
+
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toMemoryPort_sig_reg.addrIn <= x"00000000";
+		elsif (clk = '1' and clk'event) then
+			if (toMemoryPort_sig_addrIn_vld = '1') then
+				toMemoryPort_sig_reg.addrIn <= toMemoryPort_sig_addrIn_out;
+			end if;
+		end if;
+	end process;
+
+	process (clk, done_sig, toMemoryPort_sig_addrIn_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.addrIn <= x"00000000";
-		elsif (toMemoryPort_sig_addrIn_vld = '1') then
+		elsif ((done_sig = '1') and (toMemoryPort_sig_addrIn_vld = '1')) then
 			toMemoryPort_sig.addrIn <= toMemoryPort_sig_addrIn_out;
+		else
+			toMemoryPort_sig.addrIn <= toMemoryPort_sig_reg.addrIn;
 		end if;
 	end process;
 
-	process (rst, toMemoryPort_sig_dataIn_vld)
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toMemoryPort_sig_reg.dataIn <= x"00000000";
+		elsif (clk = '1' and clk'event) then
+			if (toMemoryPort_sig_dataIn_vld = '1') then
+				toMemoryPort_sig_reg.dataIn <= toMemoryPort_sig_dataIn_out;
+			end if;
+		end if;
+	end process;
+
+	process (clk, done_sig, toMemoryPort_sig_dataIn_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.dataIn <= x"00000000";
-		elsif (toMemoryPort_sig_dataIn_vld = '1') then
+		elsif ((done_sig = '1') and (toMemoryPort_sig_dataIn_vld = '1')) then
 			toMemoryPort_sig.dataIn <= toMemoryPort_sig_dataIn_out;
+		else
+			toMemoryPort_sig.dataIn <= toMemoryPort_sig_reg.dataIn;
 		end if;
 	end process;
 
-	process (rst, toMemoryPort_sig_mask_vld)
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toMemoryPort_sig_reg.mask <= MT_W;
+		elsif (clk = '1' and clk'event) then
+			if (toMemoryPort_sig_mask_vld = '1') then
+				toMemoryPort_sig_reg.mask <= toMemoryPort_sig_mask_out;
+			end if;
+		end if;
+	end process;
+
+	process (clk, done_sig, toMemoryPort_sig_mask_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.mask <= MT_W;
-		elsif (toMemoryPort_sig_mask_vld = '1') then
+		elsif ((done_sig = '1') and (toMemoryPort_sig_mask_vld = '1')) then
 			toMemoryPort_sig.mask <= toMemoryPort_sig_mask_out;
+		else
+			toMemoryPort_sig.mask <= toMemoryPort_sig_reg.mask;
 		end if;
 	end process;
 
-	process (rst, toMemoryPort_sig_req_vld)
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toMemoryPort_sig_reg.req <= ME_RD;
+		elsif (clk = '1' and clk'event) then
+			if (toMemoryPort_sig_req_vld = '1') then
+				toMemoryPort_sig_reg.req <= toMemoryPort_sig_req_out;
+			end if;
+		end if;
+	end process;
+
+	process (clk, done_sig, toMemoryPort_sig_req_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.req <= ME_RD;
-		elsif (toMemoryPort_sig_req_vld = '1') then
+		elsif ((done_sig = '1') and (toMemoryPort_sig_req_vld = '1')) then
 			toMemoryPort_sig.req <= toMemoryPort_sig_req_out;
+		else
+			toMemoryPort_sig.req <= toMemoryPort_sig_reg.req;
 		end if;
 	end process;
 
+	-- Notify Processes
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			fromMemoryPort_notify_reg <= '0';
+		elsif (clk = '1' and clk'event) then
+			if (fromMemoryPort_notify_vld = '1') then
+				fromMemoryPort_notify_reg <= fromMemoryPort_notify_out;
+			end if;
+		end if;
+	end process;
+
+	process (rst, done_sig, idle_sig, fromMemoryPort_notify_vld)
+	begin
+		if (rst = '1') then
+			fromMemoryPort_notify <= '0';
+		elsif (done_sig = '1') then
+			if (fromMemoryPort_notify_vld = '1') then
+				fromMemoryPort_notify <= fromMemoryPort_notify_out;
+			else
+				fromMemoryPort_notify <= fromMemoryPort_notify_reg;
+			end if;
+		elsif (idle_sig = '1') then
+			if ((active_state = st_state_2) or (active_state = st_state_4) or (active_state = st_state_6)) then
+				fromMemoryPort_notify <= '1';
+			else
+				fromMemoryPort_notify <= '0';
+			end if;
+		else
+			fromMemoryPort_notify <= '0';
+		end if;
+	end process;
+
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toMemoryPort_notify_reg <= '1';
+		elsif (clk = '1' and clk'event) then
+			if (toMemoryPort_notify_vld = '1') then
+				toMemoryPort_notify_reg <= toMemoryPort_notify_out;
+			end if;
+		end if;
+	end process;
+
+	process (rst, done_sig, idle_sig, toMemoryPort_notify_vld)
+	begin
+		if (rst = '1') then
+			toMemoryPort_notify <= '1';
+		elsif (done_sig = '1') then
+			if (toMemoryPort_notify_vld = '1') then
+				toMemoryPort_notify <= toMemoryPort_notify_out;
+			else
+				toMemoryPort_notify <= toMemoryPort_notify_reg;
+			end if;
+		elsif (idle_sig = '1') then
+			if ((active_state = st_state_1) or (active_state = st_state_3) or (active_state = st_state_5)) then
+				toMemoryPort_notify <= '1';
+			else
+				toMemoryPort_notify <= '0';
+			end if;
+		else
+			toMemoryPort_notify <= '0';
+		end if;
+	end process;
+
+	process (clk, rst)
+	begin
+		if (rst = '1') then
+			toRegsPort_notify_reg <= '0';
+		elsif (clk = '1' and clk'event) then
+			if (toRegsPort_notify_vld = '1') then
+				toRegsPort_notify_reg <= toRegsPort_notify_out;
+			end if;
+		end if;
+	end process;
+
+	process (rst, done_sig, toRegsPort_notify_vld)
+	begin
+		if (rst = '1') then
+			toRegsPort_notify <= '0';
+		elsif (done_sig = '1') then
+			if (toRegsPort_notify_vld = '1') then
+				toRegsPort_notify <= toRegsPort_notify_out;
+			else
+				toRegsPort_notify <= toRegsPort_notify_reg;
+			end if;
+		else
+			toRegsPort_notify <= '0';
+		end if;
+	end process;
+
+	-- Internal Variables
 	process (rst, out_regfileWrite_dstData_vld)
 	begin
 		if (rst = '1') then
@@ -420,59 +622,6 @@ begin
 		end if;
 	end process;
 
-	process(fromMemoryPort_notify_vld)
-	begin
-		if (fromMemoryPort_notify_vld = '1') then
-			fromMemoryPort_notify_reg <= fromMemoryPort_notify_out;
-		end if;
-	end process;
-
-	process(toMemoryPort_notify_vld)
-	begin
-		if (toMemoryPort_notify_vld = '1') then
-			toMemoryPort_notify_reg <= toMemoryPort_notify_out;
-		end if;
-	end process;
-
-	process(toRegsPort_notify_vld)
-	begin
-		if (toRegsPort_notify_vld = '1') then
-			toRegsPort_notify_reg <= toRegsPort_notify_out;
-		end if;
-	end process;
-
-	-- Output Processes
-	process(rst, done_sig)
-	begin
-		if (rst = '1') then
-			toRegsPort_sig.dst <= x"00000000";
-			toRegsPort_sig.dstData <= x"00000000";
-		elsif (done_sig = '1') then
-			toRegsPort_sig <= regfileWrite;
-		end if;
-	end process;
-
-	process(rst, done_sig, idle_sig)
-	begin
-		if (rst = '1') then
-			fromMemoryPort_notify <= '0';
-			toMemoryPort_notify <= '1';
-			toRegsPort_notify <= '0';
-		else
-			if (done_sig = '1') then
-				fromMemoryPort_notify <= fromMemoryPort_notify_reg;
-				toMemoryPort_notify <= toMemoryPort_notify_reg;
-				toRegsPort_notify <= toRegsPort_notify_reg;
-			elsif (idle_sig = '1') then
-				toRegsPort_notify <= '0';
-			else
-				fromMemoryPort_notify <= '0';
-				toMemoryPort_notify <= '0';
-				toRegsPort_notify <= '0';
-			end if;
-		end if;
-	end process;
-
 	-- Control process
 	process (clk, rst)
 	begin
@@ -484,6 +633,7 @@ begin
 				start_sig <= '1';
 				active_state <= next_state;
 				active_operation_in <= active_operation;
+				fromRegsPort_sig_reg_file_21_in <= fromRegsPort_sig.reg_file_21;
 				fromRegsPort_sig_reg_file_22_in <= fromRegsPort_sig.reg_file_22;
 				fromRegsPort_sig_reg_file_23_in <= fromRegsPort_sig.reg_file_23;
 				fromRegsPort_sig_reg_file_24_in <= fromRegsPort_sig.reg_file_24;
@@ -514,7 +664,6 @@ begin
 				fromRegsPort_sig_reg_file_18_in <= fromRegsPort_sig.reg_file_18;
 				fromRegsPort_sig_reg_file_19_in <= fromRegsPort_sig.reg_file_19;
 				fromRegsPort_sig_reg_file_20_in <= fromRegsPort_sig.reg_file_20;
-				fromRegsPort_sig_reg_file_21_in <= fromRegsPort_sig.reg_file_21;
 				fromMemoryPort_sig_loadedData_in <= fromMemoryPort_sig.loadedData;
 			elsif ((idle_sig = '1' or  ready_sig = '1') and wait_state = '1') then
 				start_sig <= '0';
