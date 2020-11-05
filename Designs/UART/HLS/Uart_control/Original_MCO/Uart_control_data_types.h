@@ -26,9 +26,20 @@ struct tasks_t {
 	bool stop_tx;
 };
 
-struct tx_control_t {
-	bool active;
-	bool cts;
+struct tx_events_t {
+	bool done;
+};
+
+struct config_t {
+	bool odd_parity;
+	bool parity;
+	bool two_stop_bits;
+};
+
+struct rx_events_t {
+	ap_uint<32> error_src;
+	bool ready;
+	bool timeout;
 };
 
 struct events_t {
@@ -40,33 +51,22 @@ struct events_t {
 	bool txd_ready;
 };
 
-struct rx_events_t {
-	ap_uint<32> error_src;
-	bool ready;
-	bool timeout;
-};
-
 struct bus_resp_t {
 	ap_uint<32> data;
 	bool valid;
 };
 
-struct tx_events_t {
-	bool done;
-};
-
-struct config_t {
-	bool odd_parity;
-	bool parity;
-	bool two_stop_bits;
+struct tx_control_t {
+	bool active;
+	bool cts;
 };
 
 // Constants
-const ap_uint<32> ADDR_TASKS_STOP_TX = 12;
-const ap_uint<32> ADDR_ERROR_SRC = 1152;
 const ap_uint<32> ADDR_TASKS_START_RX = 0;
 const ap_uint<32> ADDR_TASKS_STOP_RX = 4;
 const ap_uint<32> ADDR_TASKS_START_TX = 8;
+const ap_uint<32> ADDR_TASKS_STOP_TX = 12;
+const ap_uint<32> ADDR_ERROR_SRC = 1152;
 const ap_uint<32> ADDR_ENABLE = 1280;
 const ap_uint<32> ADDR_CONFIG = 1388;
 const ap_uint<32> CONFIG_STOP_MASK = 16;
