@@ -76,22 +76,37 @@ package Uart_control_types is
 	constant READ : trans_t := "0";
 	constant WRITE : trans_t := "1";
 
+
 	-- Compound Types
 	type bus_req_t is record
 		addr: std_logic_vector(31 downto 0);
 		data: std_logic_vector(31 downto 0);
 		trans_type: trans_t;
 	end record;
+
 	type tasks_t is record
 		start_rx: std_logic;
 		start_tx: std_logic;
 		stop_rx: std_logic;
 		stop_tx: std_logic;
 	end record;
-	type tx_control_t is record
-		active: std_logic;
-		cts: std_logic;
+
+	type tx_events_t is record
+		done: std_logic;
 	end record;
+
+	type config_t is record
+		odd_parity: std_logic;
+		parity: std_logic;
+		two_stop_bits: std_logic;
+	end record;
+
+	type rx_events_t is record
+		error_src: std_logic_vector(31 downto 0);
+		ready: std_logic;
+		timeout: std_logic;
+	end record;
+
 	type events_t is record
 		cts: std_logic;
 		error: std_logic;
@@ -100,30 +115,24 @@ package Uart_control_types is
 		rxd_ready: std_logic;
 		txd_ready: std_logic;
 	end record;
-	type rx_events_t is record
-		error_src: std_logic_vector(31 downto 0);
-		ready: std_logic;
-		timeout: std_logic;
-	end record;
+
 	type bus_resp_t is record
 		data: std_logic_vector(31 downto 0);
 		valid: std_logic;
 	end record;
-	type tx_events_t is record
-		done: std_logic;
-	end record;
-	type config_t is record
-		odd_parity: std_logic;
-		parity: std_logic;
-		two_stop_bits: std_logic;
+
+	type tx_control_t is record
+		active: std_logic;
+		cts: std_logic;
 	end record;
 
+
 	-- Constants
-	constant ADDR_TASKS_STOP_TX: std_logic_vector(31 downto 0) := x"0000000c";
-	constant ADDR_ERROR_SRC: std_logic_vector(31 downto 0) := x"00000480";
 	constant ADDR_TASKS_START_RX: std_logic_vector(31 downto 0) := x"00000000";
 	constant ADDR_TASKS_STOP_RX: std_logic_vector(31 downto 0) := x"00000004";
 	constant ADDR_TASKS_START_TX: std_logic_vector(31 downto 0) := x"00000008";
+	constant ADDR_TASKS_STOP_TX: std_logic_vector(31 downto 0) := x"0000000c";
+	constant ADDR_ERROR_SRC: std_logic_vector(31 downto 0) := x"00000480";
 	constant ADDR_ENABLE: std_logic_vector(31 downto 0) := x"00000500";
 	constant ADDR_CONFIG: std_logic_vector(31 downto 0) := x"0000056c";
 	constant CONFIG_STOP_MASK: std_logic_vector(31 downto 0) := x"00000010";
