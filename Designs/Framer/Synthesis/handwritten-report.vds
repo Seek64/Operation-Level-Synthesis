@@ -1,0 +1,221 @@
+#-----------------------------------------------------------
+# Vivado v2020.1 (64-bit)
+# SW Build 2902540 on Wed May 27 19:54:35 MDT 2020
+# IP Build 2902112 on Wed May 27 22:43:36 MDT 2020
+# Start of session at: Mon Nov  9 13:35:00 2020
+# Process ID: 32734
+# Current directory: /import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/vivado/vivado.runs/synth_1
+# Command line: vivado -log top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source top.tcl
+# Log file: /import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/vivado/vivado.runs/synth_1/top.vds
+# Journal file: /import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/vivado/vivado.runs/synth_1/vivado.jou
+#-----------------------------------------------------------
+source top.tcl -notrace
+Command: synth_design -top top -part xcvu9p-flga2104-2-i
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xcvu9p'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xcvu9p'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 32757
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 2130.832 ; gain = 0.000 ; free physical = 22611 ; free virtual = 29691
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'top' [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/top.vhd:35]
+INFO: [Synth 8-3491] module 'framer' declared at '/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/framer.vhd:6' bound to instance 'framer_comp' of component 'framer' [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/top.vhd:75]
+INFO: [Synth 8-638] synthesizing module 'framer' [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/framer.vhd:21]
+INFO: [Synth 8-256] done synthesizing module 'framer' (1#1) [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/framer.vhd:21]
+INFO: [Synth 8-3491] module 'monitor' declared at '/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/monitor.vhd:17' bound to instance 'monitor_comp' of component 'monitor' [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/top.vhd:87]
+INFO: [Synth 8-638] synthesizing module 'monitor' [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/monitor.vhd:32]
+INFO: [Synth 8-256] done synthesizing module 'monitor' (2#1) [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/monitor.vhd:32]
+INFO: [Synth 8-256] done synthesizing module 'top' (3#1) [/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/RTL/Handwritten/top.vhd:35]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 2130.832 ; gain = 0.000 ; free physical = 22675 ; free virtual = 29756
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2130.832 ; gain = 0.000 ; free physical = 22670 ; free virtual = 29750
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xcvu9p-flga2104-2-i
+INFO: [Synth 8-6742] Reading net delay rules and data
+INFO: [Device 21-403] Loading part xcvu9p-flga2104-2-i
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2138.836 ; gain = 8.004 ; free physical = 22669 ; free virtual = 29749
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'uP_if_state_reg' in module 'monitor'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  iSTATE |                               00 |                               00
+                 iSTATE1 |                               01 |                               01
+                 iSTATE0 |                               10 |                               10
+*
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'uP_if_state_reg' using encoding 'sequential' in module 'monitor'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2138.836 ; gain = 8.004 ; free physical = 22659 ; free virtual = 29740
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input    6 Bit       Adders := 1     
+	   2 Input    4 Bit       Adders := 2     
+	   2 Input    3 Bit       Adders := 1     
++---Registers : 
+	               23 Bit    Registers := 1     
+	                6 Bit    Registers := 1     
+	                4 Bit    Registers := 5     
+	                3 Bit    Registers := 3     
+	                1 Bit    Registers := 10    
++---Muxes : 
+	   2 Input    6 Bit        Muxes := 1     
+	   2 Input    4 Bit        Muxes := 3     
+	   8 Input    3 Bit        Muxes := 1     
+	   2 Input    3 Bit        Muxes := 1     
+	   2 Input    2 Bit        Muxes := 2     
+	   8 Input    1 Bit        Muxes := 2     
+	   2 Input    1 Bit        Muxes := 20    
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 6840 (col length:120)
+BRAMs: 4320 (col length: RAMB18 360 RAMB36 180)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:18 ; elapsed = 00:00:28 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21773 ; free virtual = 28858
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:19 ; elapsed = 00:00:29 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21772 ; free virtual = 28857
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:19 ; elapsed = 00:00:29 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21771 ; free virtual = 28856
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21769 ; free virtual = 28853
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21769 ; free virtual = 28853
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21769 ; free virtual = 28853
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21769 ; free virtual = 28853
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21769 ; free virtual = 28853
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21769 ; free virtual = 28853
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-----+------+
+|      |Cell |Count |
++------+-----+------+
+|1     |BUFG |     1|
+|2     |LUT1 |     1|
+|3     |LUT2 |     9|
+|4     |LUT3 |    20|
+|5     |LUT4 |    30|
+|6     |LUT5 |    18|
+|7     |LUT6 |    43|
+|8     |FDCE |    67|
+|9     |FDPE |     3|
+|10    |IBUF |    12|
+|11    |OBUF |    19|
++------+-----+------+
+
+Report Instance Areas: 
++------+---------------+--------+------+
+|      |Instance       |Module  |Cells |
++------+---------------+--------+------+
+|1     |top            |        |   223|
+|2     |  framer_comp  |framer  |   130|
+|3     |  monitor_comp |monitor |    61|
++------+---------------+--------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21769 ; free virtual = 28853
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 0 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.375 ; gain = 624.543 ; free physical = 21771 ; free virtual = 28854
+Synthesis Optimization Complete : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 2755.383 ; gain = 624.543 ; free physical = 21771 ; free virtual = 28854
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00 . Memory (MB): peak = 2763.375 ; gain = 0.000 ; free physical = 21842 ; free virtual = 28925
+INFO: [Netlist 29-17] Analyzing 13 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2903.090 ; gain = 0.000 ; free physical = 21745 ; free virtual = 28829
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 13 instances were transformed.
+  BUFG => BUFGCE: 1 instance 
+  IBUF => IBUF (IBUFCTRL, INBUF): 12 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+23 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:29 ; elapsed = 00:00:36 . Memory (MB): peak = 2903.090 ; gain = 786.465 ; free physical = 21889 ; free virtual = 28972
+INFO: [Common 17-1381] The checkpoint '/import/home/deutschmann/Operation-Level-Synthesis/Designs/Framer/vivado/vivado.runs/synth_1/top.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file top_utilization_synth.rpt -pb top_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Mon Nov  9 13:35:48 2020...
