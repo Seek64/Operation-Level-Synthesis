@@ -1,0 +1,16 @@
+config_rtl -reset all -reset_async -reset_level high
+config_schedule -effort high -relax_ii_for_timing=0 -verbose=0
+config_bind -effort high
+config_interface -trim_dangling_port
+set_directive_latency -max=0 Interconnect_operations
+set_directive_interface -mode ap_ctrl_none Interconnect_operations
+set_directive_interface -mode ap_none Interconnect_operations master_output_sig
+set_directive_interface -mode ap_none Interconnect_operations slave_out0_sig
+set_directive_interface -mode ap_none Interconnect_operations slave_out1_sig
+set_directive_interface -mode ap_none Interconnect_operations slave_out2_sig
+set_directive_interface -mode ap_none Interconnect_operations slave_out3_sig
+set_directive_interface -mode ap_none Interconnect_operations from_master
+set_directive_interface -mode ap_none Interconnect_operations section
+set_directive_interface -mode ap_none Interconnect_operations nextsection
+set_directive_interface -mode ap_none Interconnect_operations slave_number
+set_directive_interface -mode ap_none Interconnect_operations to_master
