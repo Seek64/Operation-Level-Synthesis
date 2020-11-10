@@ -1,0 +1,13 @@
+config_rtl -reset all -reset_async -reset_level high
+config_schedule -effort high -relax_ii_for_timing=0 -verbose=0
+config_bind -effort high
+config_interface -trim_dangling_port
+set_directive_latency -max=0 SlaveAgent_operations
+set_directive_interface -mode ap_ctrl_none SlaveAgent_operations
+set_directive_interface -mode ap_none SlaveAgent_operations agent_to_bus_sig
+set_directive_interface -mode ap_none SlaveAgent_operations agent_to_slave_sig
+set_directive_interface -mode ap_none SlaveAgent_operations agent_to_slave_notify
+set_directive_interface -mode ap_none SlaveAgent_operations slave_to_agent_notify
+set_directive_interface -mode ap_none SlaveAgent_operations section
+set_directive_interface -mode ap_none SlaveAgent_operations nextsection
+set_directive_interface -mode ap_none SlaveAgent_operations slave_to_agent_resp

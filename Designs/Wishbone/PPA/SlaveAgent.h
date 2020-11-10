@@ -55,7 +55,7 @@ struct SlaveAgent : public sc_module {
             section = nextsection;
             if (section == IDLE) {
                 //std::cout << this->name() << " - SLAVE IDLE"  << std::endl;
-                important_state
+                insert_state("IDLE");
                 this->bus_to_agent->get(wb_in);
 
                 if (wb_in.cyc == true && wb_in.stb == true && wb_in.we == false) {
@@ -85,7 +85,7 @@ struct SlaveAgent : public sc_module {
                 nextsection = DONE;
             }
             if (section == DONE) {
-                important_state
+                insert_state("DONE");
                 bus_to_agent->get(wb_in);
 
                 if(wb_in.cyc == false && wb_in.stb == false){
