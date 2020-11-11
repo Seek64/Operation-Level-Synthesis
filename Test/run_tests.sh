@@ -8,41 +8,45 @@ VIVADO_HLS="/import/public/common/Xilinx/Vivado/2020.1/bin/vivado_hls"
 
 cd $OLS_TEST_HOME
 
+function CheckSCO {
+  $DESCAM -f ../Designs/${1}/PPA/${2}.h -o . -PrintITL --hls-sco
+  $DESCAM -f ../Designs/${1}/PPA/${2}.h -o . -PrintHLS --sco
+  cd PrintHLS
+  $VIVADO_HLS ${2}_run_hls.tcl
+  cd ..
+  $ONESPIN run_properties.tcl
+  rm -rf PrintHLS
+  rm -rf PrintITL
+  read -r ${2}_result<"test_result.txt"
+  rm -f test_result.txt
+}
+
+function PrintResult {
+  if [[ $1 -eq 1 ]]
+  then
+    echo "$1 $2 test passed"
+  else
+    echo "$1 $2 test failed"
+  fi
+}
+
 # Synthesize Framer as SCO
-$DESCAM -f ../Designs/Framer/PPA/Framer.h -o . -PrintITL --hls-sco
-$DESCAM -f ../Designs/Framer/PPA/Framer.h -o . -PrintHLS --sco
-cd PrintHLS
-$VIVADO_HLS Framer_run_hls.tcl
-cd ..
-$ONESPIN run_properties.tcl
-rm -rf PrintHLS
-rm -rf PrintITL
-read -r framer_result<"test_result.txt"
-rm -f test_result.txt
+CheckSCO Framer Framer
 
 # Synthesize UART_TX as SCO
-$DESCAM -f ../Designs/UART/PPA/Uart_tx.h -o . -PrintITL --hls-sco
-$DESCAM -f ../Designs/UART/PPA/Uart_tx.h -o . -PrintHLS --sco
-cd PrintHLS
-$VIVADO_HLS Uart_tx_run_hls.tcl
-cd ..
-$ONESPIN run_properties.tcl
-rm -rf PrintHLS
-rm -rf PrintITL
-read -r Uart_tx_result<"test_result.txt"
-rm -f test_result.txt
+CheckSCO UART Uart_tx
 
 # Synthesize UART_RX as SCO
-$DESCAM -f ../Designs/UART/PPA/Uart_rx.h -o . -PrintITL --hls-sco
-$DESCAM -f ../Designs/UART/PPA/Uart_rx.h -o . -PrintHLS --sco
-cd PrintHLS
-$VIVADO_HLS Uart_rx_run_hls.tcl
-cd ..
-$ONESPIN run_properties.tcl
-rm -rf PrintHLS
-rm -rf PrintITL
-read -r Uart_rx_result<"test_result.txt"
-rm -f test_result.txt
+CheckSCO UART Uart_rx
+
+# Synthesize Wishbone Interconnect as SCO
+CheckSCO Wishbone Interconnect
+
+# Synthesize Wishbone MasterAgent as SCO
+CheckSCO Wishbone MasterAgent
+
+# Synthesize Wishbone SlaveAgent as SCO
+CheckSCO Wishbone SlaveAgent
 
 # Synthesize RISC-V as MCO
 $DESCAM -f ../Designs/RISC-V/PPA/ISS.h -o . -PrintITL --hls-mco
@@ -59,30 +63,16 @@ rm -rf PrintITL
 read -r RISCV_result<"test_result.txt"
 rm -f test_result.txt
 
-if [[ $framer_result -eq 1 ]]
-then
-  echo "Framer sco test passed"
-else
-  echo "Framer sco test failed"
-fi
+PrintResult Framer_result sco
 
-if [[ $Uart_tx_result -eq 1 ]]
-then
-  echo "Uart_tx sco test passed"
-else
-  echo "Uart_tx sco test failed"
-fi
+PrintResult Uart_tx_result sco
 
-if [[ $Uart_rx_result -eq 1 ]]
-then
-  echo "Uart_rx sco test passed"
-else
-  echo "Uart_rx sco test failed"
-fi
+PrintResult Uart_rx_result sco
 
-if [[ $RISCV_result -eq 1 ]]
-then
-  echo "RISC-V mco test passed"
-else
-  echo "RISC-V mco test failed"
-fi
+PrintResult Interconnect_result sco
+
+PrintResult MasterAgent_result sco
+
+PrintResult SlaveAgent_result sco
+
+PrintResult RISCV_result mco
