@@ -79,7 +79,6 @@ architecture Interconnect_arch of Interconnect_module is
 	signal next_state: Interconnect_state_t;
 	signal active_operation: Interconnect_operation_t;
 	signal active_state: Interconnect_state_t;
-	signal wait_state: std_logic;
 
 	-- Functions
 	function bool_to_sl(x : boolean) return std_logic;
@@ -218,19 +217,19 @@ begin
 	begin
 		case active_state is
 		when st_state_1 =>
-			if (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000000") and bool_to_sl(master_input_sig.addr <= x"00000007")) = '1' then 
+			if (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000000") and bool_to_sl(master_input_sig.addr <= x"00000007")) = '1' then
 				active_operation <= op_state_1_1;
 				next_state <= st_state_2;
-			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000008") and bool_to_sl(master_input_sig.addr <= x"0000000f")) = '1' then 
+			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000008") and bool_to_sl(master_input_sig.addr <= x"0000000f")) = '1' then
 				active_operation <= op_state_1_2;
 				next_state <= st_state_2;
-			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000010") and bool_to_sl(master_input_sig.addr <= x"00000017")) = '1' then 
+			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000010") and bool_to_sl(master_input_sig.addr <= x"00000017")) = '1' then
 				active_operation <= op_state_1_3;
 				next_state <= st_state_2;
-			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000018") and bool_to_sl(master_input_sig.addr <= x"0000001f")) = '1' then 
+			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and bool_to_sl(master_input_sig.addr >= x"00000018") and bool_to_sl(master_input_sig.addr <= x"0000001f")) = '1' then
 				active_operation <= op_state_1_4;
 				next_state <= st_state_2;
-			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and not((bool_to_sl(master_input_sig.addr >= x"00000000") and bool_to_sl(master_input_sig.addr <= x"00000007"))) and not((bool_to_sl(master_input_sig.addr >= x"00000008") and bool_to_sl(master_input_sig.addr <= x"0000000f"))) and not((bool_to_sl(master_input_sig.addr >= x"00000010") and bool_to_sl(master_input_sig.addr <= x"00000017"))) and not((bool_to_sl(master_input_sig.addr >= x"00000018") and bool_to_sl(master_input_sig.addr <= x"0000001f")))) = '1' then 
+			elsif (master_input_sig.cyc and master_input_sig.stb and not(bool_to_sl(section = START)) and not(bool_to_sl(section = TRANSMITTING)) and not(bool_to_sl(section = DONE)) and not((bool_to_sl(master_input_sig.addr >= x"00000000") and bool_to_sl(master_input_sig.addr <= x"00000007"))) and not((bool_to_sl(master_input_sig.addr >= x"00000008") and bool_to_sl(master_input_sig.addr <= x"0000000f"))) and not((bool_to_sl(master_input_sig.addr >= x"00000010") and bool_to_sl(master_input_sig.addr <= x"00000017"))) and not((bool_to_sl(master_input_sig.addr >= x"00000018") and bool_to_sl(master_input_sig.addr <= x"0000001f")))) = '1' then
 				active_operation <= op_state_1_5;
 				next_state <= st_state_3;
 			else
@@ -238,25 +237,25 @@ begin
 				next_state <= st_state_1;
 			end if;
 		when st_state_2 =>
-			if (slave_in0_sig.ack and not(bool_to_sl(section = DONE)) and bool_to_sl(slave_number = x"00000000")) = '1' then 
+			if (slave_in0_sig.ack and not(bool_to_sl(section = DONE)) and bool_to_sl(slave_number = x"00000000")) = '1' then
 				active_operation <= op_state_2_7;
 				next_state <= st_state_3;
-			elsif (not(slave_in0_sig.ack) and not(bool_to_sl(section = DONE)) and bool_to_sl(nextsection = TRANSMITTING) and bool_to_sl(slave_number = x"00000000")) = '1' then 
+			elsif (not(slave_in0_sig.ack) and not(bool_to_sl(section = DONE)) and bool_to_sl(nextsection = TRANSMITTING) and bool_to_sl(slave_number = x"00000000")) = '1' then
 				active_operation <= op_state_2_8;
 				next_state <= st_state_2;
-			elsif (slave_in1_sig.ack and not(bool_to_sl(section = DONE)) and bool_to_sl(slave_number = x"00000001")) = '1' then 
+			elsif (slave_in1_sig.ack and not(bool_to_sl(section = DONE)) and bool_to_sl(slave_number = x"00000001")) = '1' then
 				active_operation <= op_state_2_9;
 				next_state <= st_state_3;
-			elsif (not(slave_in1_sig.ack) and not(bool_to_sl(section = DONE)) and bool_to_sl(nextsection = TRANSMITTING) and bool_to_sl(slave_number = x"00000001")) = '1' then 
+			elsif (not(slave_in1_sig.ack) and not(bool_to_sl(section = DONE)) and bool_to_sl(nextsection = TRANSMITTING) and bool_to_sl(slave_number = x"00000001")) = '1' then
 				active_operation <= op_state_2_10;
 				next_state <= st_state_2;
-			elsif (slave_in2_sig.ack and not(bool_to_sl(section = DONE)) and bool_to_sl(slave_number = x"00000002")) = '1' then 
+			elsif (slave_in2_sig.ack and not(bool_to_sl(section = DONE)) and bool_to_sl(slave_number = x"00000002")) = '1' then
 				active_operation <= op_state_2_11;
 				next_state <= st_state_3;
-			elsif (not(slave_in2_sig.ack) and not(bool_to_sl(section = DONE)) and bool_to_sl(nextsection = TRANSMITTING) and bool_to_sl(slave_number = x"00000002")) = '1' then 
+			elsif (not(slave_in2_sig.ack) and not(bool_to_sl(section = DONE)) and bool_to_sl(nextsection = TRANSMITTING) and bool_to_sl(slave_number = x"00000002")) = '1' then
 				active_operation <= op_state_2_12;
 				next_state <= st_state_2;
-			elsif (not(bool_to_sl(slave_number = x"00000000")) and not(bool_to_sl(slave_number = x"00000001")) and not(bool_to_sl(slave_number = x"00000002")) and slave_in3_sig.ack and not(bool_to_sl(section = DONE))) = '1' then 
+			elsif (not(bool_to_sl(slave_number = x"00000000")) and not(bool_to_sl(slave_number = x"00000001")) and not(bool_to_sl(slave_number = x"00000002")) and slave_in3_sig.ack and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_state_2_13;
 				next_state <= st_state_3;
 			else
@@ -264,7 +263,7 @@ begin
 				next_state <= st_state_2;
 			end if;
 		when st_state_3 =>
-			if (not(master_input_sig.cyc) and not(master_input_sig.stb)) = '1' then 
+			if (not(master_input_sig.cyc) and not(master_input_sig.stb)) = '1' then
 				active_operation <= op_state_3_15;
 				next_state <= st_state_1;
 			else

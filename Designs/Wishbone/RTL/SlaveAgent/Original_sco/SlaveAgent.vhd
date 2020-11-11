@@ -46,7 +46,6 @@ architecture SlaveAgent_arch of SlaveAgent_module is
 	-- Monitor Signals
 	signal next_state: SlaveAgent_state_t;
 	signal active_state: SlaveAgent_state_t;
-	signal wait_state: std_logic;
 	signal active_operation: SlaveAgent_operation_t;
 
 	-- Functions
@@ -116,10 +115,10 @@ begin
 	begin
 		case active_state is
 		when st_IDLE_1 =>
-			if (bus_to_agent_sig.cyc and bus_to_agent_sig.stb and not(bus_to_agent_sig.we) and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = DONE))) = '1' then 
+			if (bus_to_agent_sig.cyc and bus_to_agent_sig.stb and not(bus_to_agent_sig.we) and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_IDLE_1_1;
 				next_state <= st_state_2;
-			elsif (bus_to_agent_sig.cyc and bus_to_agent_sig.stb and bus_to_agent_sig.we and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = DONE))) = '1' then 
+			elsif (bus_to_agent_sig.cyc and bus_to_agent_sig.stb and bus_to_agent_sig.we and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_IDLE_1_2;
 				next_state <= st_state_4;
 			else
@@ -127,7 +126,7 @@ begin
 				next_state <= st_IDLE_1;
 			end if;
 		when st_state_2 =>
-			if (agent_to_slave_sync) = '1' then 
+			if (agent_to_slave_sync) = '1' then
 				active_operation <= op_state_2_4;
 				next_state <= st_state_3;
 			else
@@ -135,7 +134,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_state_3 =>
-			if (slave_to_agent_sync and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = DONE))) = '1' then 
+			if (slave_to_agent_sync and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_state_3_5;
 				next_state <= st_DONE_6;
 			else
@@ -143,7 +142,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_state_4 =>
-			if (agent_to_slave_sync) = '1' then 
+			if (agent_to_slave_sync) = '1' then
 				active_operation <= op_state_4_6;
 				next_state <= st_state_5;
 			else
@@ -151,7 +150,7 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_state_5 =>
-			if (slave_to_agent_sync and not(bool_to_sl(section = DONE))) = '1' then 
+			if (slave_to_agent_sync and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_state_5_7;
 				next_state <= st_DONE_6;
 			else
@@ -159,10 +158,10 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_DONE_6 =>
-			if (not(bus_to_agent_sig.cyc) and not(bus_to_agent_sig.stb)) = '1' then 
+			if (not(bus_to_agent_sig.cyc) and not(bus_to_agent_sig.stb)) = '1' then
 				active_operation <= op_DONE_6_8;
 				next_state <= st_IDLE_1;
-			elsif (not((not(bus_to_agent_sig.cyc) and not(bus_to_agent_sig.stb))) and not(bus_to_agent_sig.we) and bool_to_sl(nextsection = DONE)) = '1' then 
+			elsif (not((not(bus_to_agent_sig.cyc) and not(bus_to_agent_sig.stb))) and not(bus_to_agent_sig.we) and bool_to_sl(nextsection = DONE)) = '1' then
 				active_operation <= op_DONE_6_9;
 				next_state <= st_DONE_6;
 			else

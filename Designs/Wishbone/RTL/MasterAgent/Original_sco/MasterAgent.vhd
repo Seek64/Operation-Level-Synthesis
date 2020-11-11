@@ -46,7 +46,6 @@ architecture MasterAgent_arch of MasterAgent_module is
 	-- Monitor Signals
 	signal next_state: MasterAgent_state_t;
 	signal active_state: MasterAgent_state_t;
-	signal wait_state: std_logic;
 	signal active_operation: MasterAgent_operation_t;
 
 	-- Functions
@@ -116,10 +115,10 @@ begin
 	begin
 		case active_state is
 		when st_IDLE_1 =>
-			if (master_to_agent_sync and bool_to_sl(master_to_agent_sig.trans_type = SINGLE_READ) and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = WAITING)) and not(bool_to_sl(section = DONE))) = '1' then 
+			if (master_to_agent_sync and bool_to_sl(master_to_agent_sig.trans_type = SINGLE_READ) and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = WAITING)) and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_IDLE_1_1;
 				next_state <= st_WAITING_2;
-			elsif (master_to_agent_sync and not(bool_to_sl(master_to_agent_sig.trans_type = SINGLE_READ)) and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = WAITING)) and not(bool_to_sl(section = DONE))) = '1' then 
+			elsif (master_to_agent_sync and not(bool_to_sl(master_to_agent_sig.trans_type = SINGLE_READ)) and not(bool_to_sl(section = READ)) and not(bool_to_sl(section = WRITE)) and not(bool_to_sl(section = WAITING)) and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_IDLE_1_2;
 				next_state <= st_WAITING_2;
 			else
@@ -127,16 +126,16 @@ begin
 				next_state <= active_state;
 			end if;
 		when st_WAITING_2 =>
-			if (bus_to_agent_sig.ack and bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ) and bus_to_agent_sig.err and not(bool_to_sl(section = DONE))) = '1' then 
+			if (bus_to_agent_sig.ack and bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ) and bus_to_agent_sig.err and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_WAITING_2_3;
 				next_state <= st_DONE_3;
-			elsif (bus_to_agent_sig.ack and bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ) and not(bus_to_agent_sig.err) and not(bool_to_sl(section = DONE))) = '1' then 
+			elsif (bus_to_agent_sig.ack and bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ) and not(bus_to_agent_sig.err) and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_WAITING_2_4;
 				next_state <= st_DONE_3;
-			elsif (bus_to_agent_sig.ack and not(bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ)) and bus_to_agent_sig.err and not(bool_to_sl(section = DONE))) = '1' then 
+			elsif (bus_to_agent_sig.ack and not(bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ)) and bus_to_agent_sig.err and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_WAITING_2_5;
 				next_state <= st_DONE_3;
-			elsif (bus_to_agent_sig.ack and not(bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ)) and not(bus_to_agent_sig.err) and not(bool_to_sl(section = DONE))) = '1' then 
+			elsif (bus_to_agent_sig.ack and not(bool_to_sl(agent_to_bus_req.trans_type = SINGLE_READ)) and not(bus_to_agent_sig.err) and not(bool_to_sl(section = DONE))) = '1' then
 				active_operation <= op_WAITING_2_6;
 				next_state <= st_DONE_3;
 			else
@@ -144,7 +143,7 @@ begin
 				next_state <= st_WAITING_2;
 			end if;
 		when st_DONE_3 =>
-			if (not(bus_to_agent_sig.ack)) = '1' then 
+			if (not(bus_to_agent_sig.ack)) = '1' then
 				active_operation <= op_DONE_3_8;
 				next_state <= st_state_4;
 			else
@@ -152,7 +151,7 @@ begin
 				next_state <= st_DONE_3;
 			end if;
 		when st_state_4 =>
-			if (agent_to_master_sync) = '1' then 
+			if (agent_to_master_sync) = '1' then
 				active_operation <= op_state_4_10;
 				next_state <= st_IDLE_1;
 			else
