@@ -1,0 +1,315 @@
+#-----------------------------------------------------------
+# Vivado v2020.1 (64-bit)
+# SW Build 2902540 on Wed May 27 19:54:35 MDT 2020
+# IP Build 2902112 on Wed May 27 22:43:36 MDT 2020
+# Start of session at: Thu Nov 12 15:13:54 2020
+# Process ID: 12370
+# Current directory: /import/home/deutschmann/Operation-Level-Synthesis/temp/riscv_constrained_syn/riscv_constrained_syn.runs/synth_1
+# Command line: vivado -log ISS_module.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source ISS_module.tcl
+# Log file: /import/home/deutschmann/Operation-Level-Synthesis/temp/riscv_constrained_syn/riscv_constrained_syn.runs/synth_1/ISS_module.vds
+# Journal file: /import/home/deutschmann/Operation-Level-Synthesis/temp/riscv_constrained_syn/riscv_constrained_syn.runs/synth_1/vivado.jou
+#-----------------------------------------------------------
+source ISS_module.tcl -notrace
+Command: synth_design -top ISS_module -part xcvu9p-flga2104-2-i
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xcvu9p'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xcvu9p'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 12405
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 2130.836 ; gain = 0.000 ; free physical = 21822 ; free virtual = 29384
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'ISS_module' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:23]
+INFO: [Synth 8-3491] module 'ISS_operations' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:12' bound to instance 'operations_inst' of component 'ISS_operations' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:170]
+INFO: [Synth 8-638] synthesizing module 'ISS_operations' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:78]
+INFO: [Synth 8-3491] module 'getRdAddr' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRdAddr.vhd:12' bound to instance 'grp_getRdAddr_fu_499' of component 'getRdAddr' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:317]
+INFO: [Synth 8-638] synthesizing module 'getRdAddr' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRdAddr.vhd:20]
+INFO: [Synth 8-256] done synthesizing module 'getRdAddr' (1#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRdAddr.vhd:20]
+INFO: [Synth 8-3491] module 'getInstrType' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getInstrType.vhd:12' bound to instance 'grp_getInstrType_fu_528' of component 'getInstrType' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:323]
+INFO: [Synth 8-638] synthesizing module 'getInstrType' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getInstrType.vhd:20]
+INFO: [Synth 8-256] done synthesizing module 'getInstrType' (2#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getInstrType.vhd:20]
+INFO: [Synth 8-3491] module 'getALUfunc' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getALUfunc.vhd:12' bound to instance 'grp_getALUfunc_fu_562' of component 'getALUfunc' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:329]
+INFO: [Synth 8-638] synthesizing module 'getALUfunc' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getALUfunc.vhd:25]
+INFO: [Synth 8-256] done synthesizing module 'getALUfunc' (3#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getALUfunc.vhd:25]
+INFO: [Synth 8-3491] module 'getRs1Addr' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRs1Addr.vhd:12' bound to instance 'grp_getRs1Addr_fu_582' of component 'getRs1Addr' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:340]
+INFO: [Synth 8-638] synthesizing module 'getRs1Addr' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRs1Addr.vhd:20]
+INFO: [Synth 8-256] done synthesizing module 'getRs1Addr' (4#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRs1Addr.vhd:20]
+INFO: [Synth 8-3491] module 'readRegfile' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/readRegfile.vhd:12' bound to instance 'grp_readRegfile_fu_650' of component 'readRegfile' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:346]
+INFO: [Synth 8-638] synthesizing module 'readRegfile' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/readRegfile.vhd:56]
+INFO: [Synth 8-256] done synthesizing module 'readRegfile' (5#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/readRegfile.vhd:56]
+INFO: [Synth 8-3491] module 'getRs2Addr' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRs2Addr.vhd:12' bound to instance 'grp_getRs2Addr_fu_814' of component 'getRs2Addr' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:388]
+INFO: [Synth 8-638] synthesizing module 'getRs2Addr' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRs2Addr.vhd:20]
+INFO: [Synth 8-256] done synthesizing module 'getRs2Addr' (6#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getRs2Addr.vhd:20]
+INFO: [Synth 8-3491] module 'getALUresult' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getALUresult.vhd:12' bound to instance 'grp_getALUresult_fu_943' of component 'getALUresult' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:394]
+INFO: [Synth 8-638] synthesizing module 'getALUresult' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getALUresult.vhd:22]
+INFO: [Synth 8-256] done synthesizing module 'getALUresult' (7#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getALUresult.vhd:22]
+INFO: [Synth 8-3491] module 'getImmediate' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getImmediate.vhd:12' bound to instance 'grp_getImmediate_fu_983' of component 'getImmediate' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:402]
+INFO: [Synth 8-638] synthesizing module 'getImmediate' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getImmediate.vhd:20]
+INFO: [Synth 8-256] done synthesizing module 'getImmediate' (8#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getImmediate.vhd:20]
+INFO: [Synth 8-3491] module 'branchPCcalculation' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/branchPCcalculation.vhd:12' bound to instance 'op2_V_assign_2_branchPCcalculation_fu_1011' of component 'branchPCcalculation' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:408]
+INFO: [Synth 8-638] synthesizing module 'branchPCcalculation' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/branchPCcalculation.vhd:22]
+INFO: [Synth 8-3491] module 'getInstrType' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getInstrType.vhd:12' bound to instance 'tmp_getInstrType_fu_68' of component 'getInstrType' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/branchPCcalculation.vhd:76]
+INFO: [Synth 8-3491] module 'getImmediate' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getImmediate.vhd:12' bound to instance 'grp_getImmediate_fu_74' of component 'getImmediate' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/branchPCcalculation.vhd:82]
+INFO: [Synth 8-256] done synthesizing module 'branchPCcalculation' (9#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/branchPCcalculation.vhd:22]
+INFO: [Synth 8-3491] module 'getMemoryMask' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getMemoryMask.vhd:12' bound to instance 'grp_getMemoryMask_fu_1033' of component 'getMemoryMask' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:416]
+INFO: [Synth 8-638] synthesizing module 'getMemoryMask' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getMemoryMask.vhd:20]
+INFO: [Synth 8-256] done synthesizing module 'getMemoryMask' (10#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getMemoryMask.vhd:20]
+INFO: [Synth 8-3491] module 'getEncUALUresult' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getEncUALUresult.vhd:12' bound to instance 'op2_V_assign_7_getEncUALUresult_fu_1052' of component 'getEncUALUresult' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:422]
+INFO: [Synth 8-638] synthesizing module 'getEncUALUresult' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getEncUALUresult.vhd:21]
+INFO: [Synth 8-3491] module 'getALUresult' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getALUresult.vhd:12' bound to instance 'grp_getALUresult_fu_41' of component 'getALUresult' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getEncUALUresult.vhd:71]
+INFO: [Synth 8-3491] module 'getInstrType' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getInstrType.vhd:12' bound to instance 'tmp_getInstrType_fu_54' of component 'getInstrType' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getEncUALUresult.vhd:79]
+INFO: [Synth 8-3491] module 'getImmediate' declared at '/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getImmediate.vhd:12' bound to instance 'p_s_getImmediate_fu_60' of component 'getImmediate' [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getEncUALUresult.vhd:85]
+INFO: [Synth 8-256] done synthesizing module 'getEncUALUresult' (11#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/getEncUALUresult.vhd:21]
+INFO: [Synth 8-256] done synthesizing module 'ISS_operations' (12#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS_operations.vhd:78]
+WARNING: [Synth 8-614] signal 'rst' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:346]
+WARNING: [Synth 8-614] signal 'out_regfileWrite_dst' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:346]
+WARNING: [Synth 8-614] signal 'toRegsPort_sig_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:346]
+WARNING: [Synth 8-614] signal 'rst' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:368]
+WARNING: [Synth 8-614] signal 'out_regfileWrite_dstData' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:368]
+WARNING: [Synth 8-614] signal 'toRegsPort_sig_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:368]
+WARNING: [Synth 8-614] signal 'rst' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:390]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_addrIn_out' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:390]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:390]
+WARNING: [Synth 8-614] signal 'rst' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:412]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_dataIn_out' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:412]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:412]
+WARNING: [Synth 8-614] signal 'rst' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:434]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_mask_out' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:434]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:434]
+WARNING: [Synth 8-614] signal 'rst' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:456]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_req_out' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:456]
+WARNING: [Synth 8-614] signal 'toMemoryPort_sig_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:456]
+WARNING: [Synth 8-614] signal 'fromMemoryPort_notify_out' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:479]
+WARNING: [Synth 8-614] signal 'fromMemoryPort_notify_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:479]
+WARNING: [Synth 8-614] signal 'active_state' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:479]
+WARNING: [Synth 8-614] signal 'toMemoryPort_notify_out' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:511]
+WARNING: [Synth 8-614] signal 'toMemoryPort_notify_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:511]
+WARNING: [Synth 8-614] signal 'active_state' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:511]
+WARNING: [Synth 8-614] signal 'toRegsPort_notify_out' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:543]
+WARNING: [Synth 8-614] signal 'toRegsPort_notify_reg' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:543]
+WARNING: [Synth 8-614] signal 'out_regfileWrite_dstData' is read in the process but is not in the sensitivity list [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:559]
+INFO: [Synth 8-256] done synthesizing module 'ISS_module' (13#1) [/import/home/deutschmann/Operation-Level-Synthesis/temp/RTL/Original_MCO/ISS.vhd:23]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2130.836 ; gain = 0.000 ; free physical = 21877 ; free virtual = 29436
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:05 ; elapsed = 00:00:07 . Memory (MB): peak = 2130.836 ; gain = 0.000 ; free physical = 21876 ; free virtual = 29435
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xcvu9p-flga2104-2-i
+INFO: [Synth 8-6742] Reading net delay rules and data
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xcvu9p-flga2104-2-i
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:05 ; elapsed = 00:00:07 . Memory (MB): peak = 2138.840 ; gain = 8.004 ; free physical = 21876 ; free virtual = 29435
+---------------------------------------------------------------------------------
+INFO: [Synth 8-4490] FSM extraction disabled for register 'ap_CS_fsm_reg' through user attribute
+INFO: [Synth 8-4490] FSM extraction disabled for register 'ap_CS_fsm_reg' through user attribute
+INFO: [Synth 8-4490] FSM extraction disabled for register 'ap_CS_fsm_reg' through user attribute
+INFO: [Synth 8-4490] FSM extraction disabled for register 'ap_CS_fsm_reg' through user attribute
+INFO: [Synth 8-4490] FSM extraction disabled for register 'ap_CS_fsm_reg' through user attribute
+INFO: [Synth 8-802] inferred FSM for state register 'active_state_reg' in module 'ISS_module'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+              st_state_1 |                              001 |                              000
+              st_state_2 |                              101 |                              001
+              st_state_3 |                              100 |                              010
+              st_state_4 |                              011 |                              011
+              st_state_5 |                              010 |                              100
+              st_state_6 |                              000 |                              101
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'active_state_reg' using encoding 'sequential' in module 'ISS_module'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 2138.840 ; gain = 8.004 ; free physical = 21822 ; free virtual = 29378
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   3 Input   32 Bit       Adders := 2     
+	   2 Input   32 Bit       Adders := 3     
+	   2 Input    6 Bit       Adders := 7     
++---XORs : 
+	   2 Input     32 Bit         XORs := 2     
+	   2 Input      1 Bit         XORs := 16    
++---Registers : 
+	               32 Bit    Registers := 9     
+	                6 Bit    Registers := 1     
+	                5 Bit    Registers := 1     
+	                4 Bit    Registers := 5     
+	                3 Bit    Registers := 1     
+	                2 Bit    Registers := 3     
+	                1 Bit    Registers := 6     
++---Muxes : 
+	   2 Input   32 Bit        Muxes := 50    
+	   7 Input   32 Bit        Muxes := 1     
+	   2 Input   20 Bit        Muxes := 3     
+	   2 Input   12 Bit        Muxes := 3     
+	   2 Input    6 Bit        Muxes := 24    
+	   3 Input    6 Bit        Muxes := 3     
+	   2 Input    5 Bit        Muxes := 4     
+	  13 Input    4 Bit        Muxes := 1     
+	   2 Input    4 Bit        Muxes := 13    
+	   9 Input    4 Bit        Muxes := 1     
+	  10 Input    4 Bit        Muxes := 1     
+	   6 Input    4 Bit        Muxes := 1     
+	   2 Input    3 Bit        Muxes := 7     
+	   3 Input    3 Bit        Muxes := 1     
+	  20 Input    3 Bit        Muxes := 1     
+	   4 Input    2 Bit        Muxes := 2     
+	   2 Input    2 Bit        Muxes := 4     
+	   2 Input    1 Bit        Muxes := 246   
+	  12 Input    1 Bit        Muxes := 1     
+	  31 Input    1 Bit        Muxes := 1     
+	   6 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 6840 (col length:120)
+BRAMs: 4320 (col length: RAMB18 360 RAMB36 180)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:38 ; elapsed = 00:00:48 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20943 ; free virtual = 28511
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:38 ; elapsed = 00:00:48 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20946 ; free virtual = 28511
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:39 ; elapsed = 00:00:49 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20952 ; free virtual = 28517
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:41 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20947 ; free virtual = 28514
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:41 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20947 ; free virtual = 28514
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:41 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20947 ; free virtual = 28514
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:41 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20947 ; free virtual = 28514
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:42 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20947 ; free virtual = 28514
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:42 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20947 ; free virtual = 28514
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |BUFG   |     1|
+|2     |CARRY8 |    24|
+|3     |LUT1   |     1|
+|4     |LUT2   |    97|
+|5     |LUT3   |   100|
+|6     |LUT4   |   108|
+|7     |LUT5   |   373|
+|8     |LUT6   |  1064|
+|9     |MUXF7  |    19|
+|10    |FDCE   |   267|
+|11    |FDPE   |     6|
+|12    |FDRE   |    36|
+|13    |IBUF   |  1028|
+|14    |OBUF   |   136|
++------+-------+------+
+
+Report Instance Areas: 
++------+--------------------------------------------+-----------------+------+
+|      |Instance                                    |Module           |Cells |
++------+--------------------------------------------+-----------------+------+
+|1     |top                                         |                 |  3260|
+|2     |  operations_inst                           |ISS_operations   |  1866|
+|3     |    grp_getALUfunc_fu_562                   |getALUfunc       |   191|
+|4     |    grp_readRegfile_fu_650                  |readRegfile      |  1439|
+|5     |    op2_V_assign_7_getEncUALUresult_fu_1052 |getEncUALUresult |   119|
+|6     |      grp_getALUresult_fu_41                |getALUresult     |   119|
++------+--------------------------------------------+-----------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:42 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20947 ; free virtual = 28514
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 27 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:42 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.316 ; gain = 953.480 ; free physical = 20951 ; free virtual = 28518
+Synthesis Optimization Complete : Time (s): cpu = 00:00:42 ; elapsed = 00:00:52 . Memory (MB): peak = 3084.324 ; gain = 953.480 ; free physical = 20951 ; free virtual = 28517
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.03 ; elapsed = 00:00:00.04 . Memory (MB): peak = 3084.324 ; gain = 0.000 ; free physical = 21027 ; free virtual = 28596
+INFO: [Netlist 29-17] Analyzing 1072 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 3154.656 ; gain = 0.000 ; free physical = 20934 ; free virtual = 28502
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 1029 instances were transformed.
+  BUFG => BUFGCE: 1 instance 
+  IBUF => IBUF (IBUFCTRL, INBUF): 1028 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+63 Infos, 27 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:50 ; elapsed = 00:00:58 . Memory (MB): peak = 3154.656 ; gain = 1038.027 ; free physical = 21074 ; free virtual = 28642
+INFO: [Common 17-1381] The checkpoint '/import/home/deutschmann/Operation-Level-Synthesis/temp/riscv_constrained_syn/riscv_constrained_syn.runs/synth_1/ISS_module.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file ISS_module_utilization_synth.rpt -pb ISS_module_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Thu Nov 12 15:15:04 2020...
