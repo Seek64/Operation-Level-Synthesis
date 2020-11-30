@@ -561,7 +561,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_tx_control_out_msg_active_vld)
+	process (rst, done_sig, out_tx_control_out_msg_active_vld)
 	begin
 		if (rst = '1') then
 			tx_control_out_sig.active <= '0';
@@ -583,7 +583,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_tx_control_out_msg_cts_vld)
+	process (rst, done_sig, out_tx_control_out_msg_cts_vld)
 	begin
 		if (rst = '1') then
 			tx_control_out_sig.cts <= '1';
@@ -605,7 +605,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, rx_config_out_sig_odd_parity_vld)
+	process (rst, done_sig, rx_config_out_sig_odd_parity_vld)
 	begin
 		if (rst = '1') then
 			rx_config_out_sig.odd_parity <= '0';
@@ -627,7 +627,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, rx_config_out_sig_parity_vld)
+	process (rst, done_sig, rx_config_out_sig_parity_vld)
 	begin
 		if (rst = '1') then
 			rx_config_out_sig.parity <= '0';
@@ -649,7 +649,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, rx_config_out_sig_two_stop_bits_vld)
+	process (rst, done_sig, rx_config_out_sig_two_stop_bits_vld)
 	begin
 		if (rst = '1') then
 			rx_config_out_sig.two_stop_bits <= '0';
@@ -671,7 +671,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, bus_out_sig_data_vld)
+	process (rst, done_sig, bus_out_sig_data_vld)
 	begin
 		if (rst = '1') then
 			bus_out_sig.data <= x"00000000";
@@ -693,7 +693,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, bus_out_sig_valid_vld)
+	process (rst, done_sig, bus_out_sig_valid_vld)
 	begin
 		if (rst = '1') then
 			bus_out_sig.valid <= '0';
@@ -715,7 +715,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, events_out_sig_cts_vld)
+	process (rst, done_sig, events_out_sig_cts_vld)
 	begin
 		if (rst = '1') then
 			events_out_sig.cts <= '0';
@@ -737,7 +737,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, events_out_sig_error_vld)
+	process (rst, done_sig, events_out_sig_error_vld)
 	begin
 		if (rst = '1') then
 			events_out_sig.error <= '0';
@@ -759,7 +759,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, events_out_sig_ncts_vld)
+	process (rst, done_sig, events_out_sig_ncts_vld)
 	begin
 		if (rst = '1') then
 			events_out_sig.ncts <= '0';
@@ -781,7 +781,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, events_out_sig_rx_timeout_vld)
+	process (rst, done_sig, events_out_sig_rx_timeout_vld)
 	begin
 		if (rst = '1') then
 			events_out_sig.rx_timeout <= '0';
@@ -803,7 +803,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, events_out_sig_rxd_ready_vld)
+	process (rst, done_sig, events_out_sig_rxd_ready_vld)
 	begin
 		if (rst = '1') then
 			events_out_sig.rxd_ready <= '0';
@@ -825,7 +825,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, events_out_sig_txd_ready_vld)
+	process (rst, done_sig, events_out_sig_txd_ready_vld)
 	begin
 		if (rst = '1') then
 			events_out_sig.txd_ready <= '0';
@@ -847,7 +847,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, tx_config_out_sig_odd_parity_vld)
+	process (rst, done_sig, tx_config_out_sig_odd_parity_vld)
 	begin
 		if (rst = '1') then
 			tx_config_out_sig.odd_parity <= '0';
@@ -869,7 +869,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, tx_config_out_sig_parity_vld)
+	process (rst, done_sig, tx_config_out_sig_parity_vld)
 	begin
 		if (rst = '1') then
 			tx_config_out_sig.parity <= '0';
@@ -891,7 +891,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, tx_config_out_sig_two_stop_bits_vld)
+	process (rst, done_sig, tx_config_out_sig_two_stop_bits_vld)
 	begin
 		if (rst = '1') then
 			tx_config_out_sig.two_stop_bits <= '0';
@@ -913,7 +913,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_rts_internal_vld)
+	process (rst, done_sig, out_rts_internal_vld)
 	begin
 		if (rst = '1') then
 			rts_out_sig <= '0';
@@ -935,7 +935,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_rx_active_out_msg_vld)
+	process (rst, done_sig, out_rx_active_out_msg_vld)
 	begin
 		if (rst = '1') then
 			rx_active_out_sig <= '0';
