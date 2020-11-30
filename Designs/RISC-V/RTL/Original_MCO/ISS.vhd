@@ -268,7 +268,7 @@ begin
 	begin
 		case active_state is
 		when st_state_1 =>
-			if (toMemoryPort_sync) = '1' then 
+			if (toMemoryPort_sync) = '1' then
 				active_operation <= op_state_1_1;
 				next_state <= st_state_2;
 				wait_state <= '0';
@@ -278,39 +278,39 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_2 =>
-			if (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) = '1' then 
+			if (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) = '1' then
 				active_operation <= op_state_2_2;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) = '1' then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) = '1' then
 				active_operation <= op_state_2_3;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) = '1' then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) = '1' then
 				active_operation <= op_state_2_4;
 				next_state <= st_state_3;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) = '1' then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) = '1' then
 				active_operation <= op_state_2_5;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) = '1' then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) = '1' then
 				active_operation <= op_state_2_6;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) = '1' then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) = '1' then
 				active_operation <= op_state_2_7;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) = '1' then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) = '1' then
 				active_operation <= op_state_2_8;
 				next_state <= st_state_5;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J)) = '1' then 
+			elsif (fromMemoryPort_sync and bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J)) = '1' then
 				active_operation <= op_state_2_9;
 				next_state <= st_state_1;
 				wait_state <= '0';
-			elsif (fromMemoryPort_sync and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J))) = '1' then 
+			elsif (fromMemoryPort_sync and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_R)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_B)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_S)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_U)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_J)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_I)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_L)) and not(bool_to_sl(getEncType(fromMemoryPort_sig.loadedData) = ENC_I_J))) = '1' then
 				active_operation <= op_state_2_10;
 				next_state <= st_state_1;
 				wait_state <= '0';
@@ -320,7 +320,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_3 =>
-			if (toMemoryPort_sync) = '1' then 
+			if (toMemoryPort_sync) = '1' then
 				active_operation <= op_state_3_11;
 				next_state <= st_state_4;
 				wait_state <= '0';
@@ -330,7 +330,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_4 =>
-			if (fromMemoryPort_sync) = '1' then 
+			if (fromMemoryPort_sync) = '1' then
 				active_operation <= op_state_4_12;
 				next_state <= st_state_1;
 				wait_state <= '0';
@@ -340,7 +340,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_5 =>
-			if (toMemoryPort_sync) = '1' then 
+			if (toMemoryPort_sync) = '1' then
 				active_operation <= op_state_5_13;
 				next_state <= st_state_6;
 				wait_state <= '0';
@@ -350,7 +350,7 @@ begin
 				wait_state <= '1';
 			end if;
 		when st_state_6 =>
-			if (fromMemoryPort_sync) = '1' then 
+			if (fromMemoryPort_sync) = '1' then
 				active_operation <= op_state_6_14;
 				next_state <= st_state_1;
 				wait_state <= '0';
@@ -374,7 +374,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_regfileWrite_dst_vld)
+	process (rst, done_sig, out_regfileWrite_dst_vld)
 	begin
 		if (rst = '1') then
 			toRegsPort_sig.dst <= x"00000000";
@@ -396,7 +396,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_regfileWrite_dstData_vld)
+	process (rst, done_sig, out_regfileWrite_dstData_vld)
 	begin
 		if (rst = '1') then
 			toRegsPort_sig.dstData <= x"00000000";
@@ -418,7 +418,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_addrIn_vld)
+	process (rst, done_sig, toMemoryPort_sig_addrIn_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.addrIn <= x"00000000";
@@ -440,7 +440,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_dataIn_vld)
+	process (rst, done_sig, toMemoryPort_sig_dataIn_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.dataIn <= x"00000000";
@@ -462,7 +462,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_mask_vld)
+	process (rst, done_sig, toMemoryPort_sig_mask_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.mask <= MT_W;
@@ -484,7 +484,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_req_vld)
+	process (rst, done_sig, toMemoryPort_sig_req_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.req <= ME_RD;

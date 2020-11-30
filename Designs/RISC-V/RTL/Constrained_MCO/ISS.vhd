@@ -343,7 +343,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_regfileWrite_dst_vld)
+	process (rst, done_sig, out_regfileWrite_dst_vld)
 	begin
 		if (rst = '1') then
 			toRegsPort_sig.dst <= x"00000000";
@@ -365,7 +365,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, out_regfileWrite_dstData_vld)
+	process (rst, done_sig, out_regfileWrite_dstData_vld)
 	begin
 		if (rst = '1') then
 			toRegsPort_sig.dstData <= x"00000000";
@@ -387,7 +387,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_addrIn_vld)
+	process (rst, done_sig, toMemoryPort_sig_addrIn_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.addrIn <= x"00000000";
@@ -409,7 +409,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_dataIn_vld)
+	process (rst, done_sig, toMemoryPort_sig_dataIn_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.dataIn <= x"00000000";
@@ -431,7 +431,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_mask_vld)
+	process (rst, done_sig, toMemoryPort_sig_mask_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.mask <= MT_W;
@@ -453,7 +453,7 @@ begin
 		end if;
 	end process;
 
-	process (clk, done_sig, toMemoryPort_sig_req_vld)
+	process (rst, done_sig, toMemoryPort_sig_req_vld)
 	begin
 		if (rst = '1') then
 			toMemoryPort_sig.req <= ME_RD;
