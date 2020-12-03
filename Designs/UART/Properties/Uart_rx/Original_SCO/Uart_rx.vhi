@@ -527,7 +527,88 @@ prove:
 end property;
 
 
-property GET_STOP_BIT_SECOND_12_31 is
+property GET_STOP_BIT_11_31 is
+dependencies: no_reset;
+for timepoints:
+	t_end = t+1;
+freeze:
+	data_out_msg_data_at_t = data_out_msg_data@t,
+	data_out_msg_valid_at_t = data_out_msg_valid@t,
+	data_out_sig_valid_at_t = data_out_sig_valid@t,
+	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
+	events_out_msg_ready_at_t = events_out_msg_ready@t,
+	events_out_msg_timeout_at_t = events_out_msg_timeout@t,
+	parity_at_t = parity@t,
+	rxd_sig_at_t = rxd_sig@t,
+	suspending_count_at_t = suspending_count@t,
+	timeout_at_t = timeout@t,
+	wait_framing_break_at_t = wait_framing_break@t;
+assume:
+	at t: GET_STOP_BIT_11;
+	at t: rxd_sync;
+	at t: rxd_sig;
+	at t: config_in_sig_two_stop_bits;
+prove:
+	at t_end: GET_STOP_BIT_SECOND_12;
+	at t_end: data_out_msg_data = data_out_msg_data_at_t;
+	at t_end: data_out_msg_valid = data_out_msg_valid_at_t;
+	at t_end: data_out_sig_valid = data_out_sig_valid_at_t;
+	at t_end: events_out_msg_error_src = events_out_msg_error_src_at_t;
+	at t_end: events_out_msg_ready = events_out_msg_ready_at_t;
+	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
+	at t_end: first_stop_bit = rxd_sig_at_t;
+	at t_end: parity = parity_at_t;
+	at t_end: suspending_count = suspending_count_at_t;
+	at t_end: timeout = timeout_at_t;
+	at t_end: wait_framing_break = wait_framing_break_at_t;
+	during[t+1, t_end]: events_out_notify = false;
+	during[t+1, t_end-1]: rxd_notify = false;
+	at t_end: rxd_notify = true;
+end property;
+
+
+property GET_STOP_BIT_11_32 is
+dependencies: no_reset;
+for timepoints:
+	t_end = t+1;
+freeze:
+	data_out_msg_data_at_t = data_out_msg_data@t,
+	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
+	events_out_msg_timeout_at_t = events_out_msg_timeout@t,
+	parity_at_t = parity@t,
+	rxd_sig_at_t = rxd_sig@t,
+	suspending_count_at_t = suspending_count@t,
+	timeout_at_t = timeout@t,
+	wait_framing_break_at_t = wait_framing_break@t;
+assume:
+	at t: GET_STOP_BIT_11;
+	at t: rxd_sync;
+	at t: rxd_sig;
+	at t: not(config_in_sig_two_stop_bits);
+prove:
+	at t_end: IDLE_1;
+	at t_end: data_out_msg_data = data_out_msg_data_at_t;
+	at t_end: data_out_msg_valid = true;
+	at t_end: data_out_sig_valid = true;
+	at t_end: events_out_msg_error_src = 0;
+	at t_end: events_out_msg_ready = false;
+	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
+	at t_end: events_out_sig_error_src = events_out_msg_error_src_at_t;
+	at t_end: events_out_sig_ready = true;
+	at t_end: events_out_sig_timeout = events_out_msg_timeout_at_t;
+	at t_end: first_stop_bit = rxd_sig_at_t;
+	at t_end: parity = parity_at_t;
+	at t_end: suspending_count = suspending_count_at_t;
+	at t_end: timeout = timeout_at_t;
+	at t_end: wait_framing_break = wait_framing_break_at_t;
+	during[t+1, t_end-1]: events_out_notify = false;
+	at t_end: events_out_notify = true;
+	during[t+1, t_end-1]: rxd_notify = false;
+	at t_end: rxd_notify = true;
+end property;
+
+
+property GET_STOP_BIT_SECOND_12_33 is
 dependencies: no_reset;
 for timepoints:
 	t_end = t+1;
@@ -568,7 +649,7 @@ prove:
 end property;
 
 
-property GET_STOP_BIT_SECOND_12_32 is
+property GET_STOP_BIT_SECOND_12_34 is
 dependencies: no_reset;
 for timepoints:
 	t_end = t+1;
@@ -594,6 +675,46 @@ prove:
 	at t_end: events_out_msg_ready = false;
 	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
 	at t_end: events_out_sig_error_src = ERROR_FRAMING_MASK;
+	at t_end: events_out_sig_ready = true;
+	at t_end: events_out_sig_timeout = events_out_msg_timeout_at_t;
+	at t_end: first_stop_bit = first_stop_bit_at_t;
+	at t_end: parity = parity_at_t;
+	at t_end: suspending_count = suspending_count_at_t;
+	at t_end: timeout = timeout_at_t;
+	at t_end: wait_framing_break = wait_framing_break_at_t;
+	during[t+1, t_end-1]: events_out_notify = false;
+	at t_end: events_out_notify = true;
+	during[t+1, t_end-1]: rxd_notify = false;
+	at t_end: rxd_notify = true;
+end property;
+
+
+property GET_STOP_BIT_SECOND_12_35 is
+dependencies: no_reset;
+for timepoints:
+	t_end = t+1;
+freeze:
+	data_out_msg_data_at_t = data_out_msg_data@t,
+	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
+	events_out_msg_timeout_at_t = events_out_msg_timeout@t,
+	first_stop_bit_at_t = first_stop_bit@t,
+	parity_at_t = parity@t,
+	suspending_count_at_t = suspending_count@t,
+	timeout_at_t = timeout@t,
+	wait_framing_break_at_t = wait_framing_break@t;
+assume:
+	at t: GET_STOP_BIT_SECOND_12;
+	at t: rxd_sync;
+	at t: rxd_sig;
+prove:
+	at t_end: IDLE_1;
+	at t_end: data_out_msg_data = data_out_msg_data_at_t;
+	at t_end: data_out_msg_valid = true;
+	at t_end: data_out_sig_valid = true;
+	at t_end: events_out_msg_error_src = 0;
+	at t_end: events_out_msg_ready = false;
+	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
+	at t_end: events_out_sig_error_src = events_out_msg_error_src_at_t;
 	at t_end: events_out_sig_ready = true;
 	at t_end: events_out_sig_timeout = events_out_msg_timeout_at_t;
 	at t_end: first_stop_bit = first_stop_bit_at_t;
@@ -928,7 +1049,7 @@ prove:
 end property;
 
 
-property IDLE_1_33 is
+property IDLE_1_36 is
 dependencies: no_reset;
 for timepoints:
 	t_end = t+1;
@@ -964,7 +1085,7 @@ prove:
 end property;
 
 
-property IDLE_1_36 is
+property IDLE_1_39 is
 dependencies: no_reset;
 for timepoints:
 	t_end = t+1;
@@ -1002,7 +1123,7 @@ prove:
 end property;
 
 
-property IDLE_1_40 is
+property IDLE_1_43 is
 dependencies: no_reset;
 for timepoints:
 	t_end = t+1;
@@ -1039,45 +1160,6 @@ prove:
 	at t_end: wait_framing_break = wait_framing_break_at_t;
 	during[t+1, t_end-1]: events_out_notify = false;
 	at t_end: events_out_notify = true;
-	during[t+1, t_end-1]: rxd_notify = false;
-	at t_end: rxd_notify = true;
-end property;
-
-
-property IDLE_1_41 is
-dependencies: no_reset;
-for timepoints:
-	t_end = t+1;
-freeze:
-	data_out_msg_data_at_t = data_out_msg_data@t,
-	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
-	events_out_msg_ready_at_t = events_out_msg_ready@t,
-	events_out_msg_timeout_at_t = events_out_msg_timeout@t,
-	first_stop_bit_at_t = first_stop_bit@t,
-	parity_at_t = parity@t,
-	suspending_count_at_t = suspending_count@t,
-	wait_framing_break_at_t = wait_framing_break@t;
-assume:
-	at t: IDLE_1;
-	at t: not(rxd_sync);
-	at t: not(timeout);
-	at t: not(control_active_in_sig);
-	at t: data_out_sync_sig;
-	at t: not((resize(39,32) <= (resize(1,32) + suspending_count)(31 downto 0)));
-prove:
-	at t_end: IDLE_1;
-	at t_end: data_out_msg_data = data_out_msg_data_at_t;
-	at t_end: data_out_msg_valid = false;
-	at t_end: data_out_sig_valid = false;
-	at t_end: events_out_msg_error_src = events_out_msg_error_src_at_t;
-	at t_end: events_out_msg_ready = events_out_msg_ready_at_t;
-	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
-	at t_end: first_stop_bit = first_stop_bit_at_t;
-	at t_end: parity = parity_at_t;
-	at t_end: suspending_count = (1 + suspending_count_at_t)(31 downto 0);
-	at t_end: timeout = false;
-	at t_end: wait_framing_break = wait_framing_break_at_t;
-	during[t+1, t_end]: events_out_notify = false;
 	during[t+1, t_end-1]: rxd_notify = false;
 	at t_end: rxd_notify = true;
 end property;
@@ -1089,6 +1171,45 @@ for timepoints:
 	t_end = t+1;
 freeze:
 	data_out_msg_data_at_t = data_out_msg_data@t,
+	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
+	events_out_msg_ready_at_t = events_out_msg_ready@t,
+	events_out_msg_timeout_at_t = events_out_msg_timeout@t,
+	first_stop_bit_at_t = first_stop_bit@t,
+	parity_at_t = parity@t,
+	suspending_count_at_t = suspending_count@t,
+	wait_framing_break_at_t = wait_framing_break@t;
+assume:
+	at t: IDLE_1;
+	at t: not(rxd_sync);
+	at t: not(timeout);
+	at t: not(control_active_in_sig);
+	at t: data_out_sync_sig;
+	at t: not((resize(39,32) <= (resize(1,32) + suspending_count)(31 downto 0)));
+prove:
+	at t_end: IDLE_1;
+	at t_end: data_out_msg_data = data_out_msg_data_at_t;
+	at t_end: data_out_msg_valid = false;
+	at t_end: data_out_sig_valid = false;
+	at t_end: events_out_msg_error_src = events_out_msg_error_src_at_t;
+	at t_end: events_out_msg_ready = events_out_msg_ready_at_t;
+	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
+	at t_end: first_stop_bit = first_stop_bit_at_t;
+	at t_end: parity = parity_at_t;
+	at t_end: suspending_count = (1 + suspending_count_at_t)(31 downto 0);
+	at t_end: timeout = false;
+	at t_end: wait_framing_break = wait_framing_break_at_t;
+	during[t+1, t_end]: events_out_notify = false;
+	during[t+1, t_end-1]: rxd_notify = false;
+	at t_end: rxd_notify = true;
+end property;
+
+
+property IDLE_1_47 is
+dependencies: no_reset;
+for timepoints:
+	t_end = t+1;
+freeze:
+	data_out_msg_data_at_t = data_out_msg_data@t,
 	data_out_msg_valid_at_t = data_out_msg_valid@t,
 	data_out_sig_valid_at_t = data_out_sig_valid@t,
 	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
@@ -1127,7 +1248,7 @@ prove:
 end property;
 
 
-property IDLE_1_45 is
+property IDLE_1_48 is
 dependencies: no_reset;
 for timepoints:
 	t_end = t+1;
@@ -1162,39 +1283,6 @@ prove:
 	at t_end: suspending_count = (1 + suspending_count_at_t)(31 downto 0);
 	at t_end: timeout = false;
 	at t_end: wait_framing_break = wait_framing_break_at_t;
-	during[t+1, t_end]: events_out_notify = false;
-	during[t+1, t_end-1]: rxd_notify = false;
-	at t_end: rxd_notify = true;
-end property;
-
-
-property IDLE_1_49 is
-dependencies: no_reset;
-for timepoints:
-	t_end = t+1;
-freeze:
-	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
-	events_out_msg_ready_at_t = events_out_msg_ready@t,
-	events_out_msg_timeout_at_t = events_out_msg_timeout@t,
-	timeout_at_t = timeout@t;
-assume:
-	at t: IDLE_1;
-	at t: not(rxd_sync);
-	at t: timeout;
-	at t: not(control_active_in_sig);
-prove:
-	at t_end: IDLE_1;
-	at t_end: data_out_msg_data = 0;
-	at t_end: data_out_msg_valid = false;
-	at t_end: data_out_sig_valid = false;
-	at t_end: events_out_msg_error_src = events_out_msg_error_src_at_t;
-	at t_end: events_out_msg_ready = events_out_msg_ready_at_t;
-	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
-	at t_end: first_stop_bit = false;
-	at t_end: parity = false;
-	at t_end: suspending_count = 0;
-	at t_end: timeout = timeout_at_t;
-	at t_end: wait_framing_break = false;
 	during[t+1, t_end]: events_out_notify = false;
 	during[t+1, t_end-1]: rxd_notify = false;
 	at t_end: rxd_notify = true;
@@ -1239,6 +1327,39 @@ prove:
 	at t_end: wait_framing_break = (not(rxd_sig_at_t) and wait_framing_break_at_t);
 	during[t+1, t_end-1]: events_out_notify = false;
 	at t_end: events_out_notify = true;
+	during[t+1, t_end-1]: rxd_notify = false;
+	at t_end: rxd_notify = true;
+end property;
+
+
+property IDLE_1_52 is
+dependencies: no_reset;
+for timepoints:
+	t_end = t+1;
+freeze:
+	events_out_msg_error_src_at_t = events_out_msg_error_src@t,
+	events_out_msg_ready_at_t = events_out_msg_ready@t,
+	events_out_msg_timeout_at_t = events_out_msg_timeout@t,
+	timeout_at_t = timeout@t;
+assume:
+	at t: IDLE_1;
+	at t: not(rxd_sync);
+	at t: timeout;
+	at t: not(control_active_in_sig);
+prove:
+	at t_end: IDLE_1;
+	at t_end: data_out_msg_data = 0;
+	at t_end: data_out_msg_valid = false;
+	at t_end: data_out_sig_valid = false;
+	at t_end: events_out_msg_error_src = events_out_msg_error_src_at_t;
+	at t_end: events_out_msg_ready = events_out_msg_ready_at_t;
+	at t_end: events_out_msg_timeout = events_out_msg_timeout_at_t;
+	at t_end: first_stop_bit = false;
+	at t_end: parity = false;
+	at t_end: suspending_count = 0;
+	at t_end: timeout = timeout_at_t;
+	at t_end: wait_framing_break = false;
+	during[t+1, t_end]: events_out_notify = false;
 	during[t+1, t_end-1]: rxd_notify = false;
 	at t_end: rxd_notify = true;
 end property;

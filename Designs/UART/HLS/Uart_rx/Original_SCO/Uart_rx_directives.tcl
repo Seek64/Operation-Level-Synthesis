@@ -7,12 +7,12 @@ set_directive_interface -mode ap_ctrl_none Uart_rx_operations
 set_directive_interface -mode ap_none Uart_rx_operations events_out_sig
 set_directive_interface -mode ap_none Uart_rx_operations events_out_notify
 set_directive_interface -mode ap_none Uart_rx_operations rxd_notify
-set_directive_interface -mode ap_none Uart_rx_operations wait_framing_break
-set_directive_interface -mode ap_none Uart_rx_operations events_out_msg
+set_directive_interface -mode ap_none Uart_rx_operations parity
 set_directive_interface -mode ap_none Uart_rx_operations timeout
 set_directive_interface -mode ap_none Uart_rx_operations data_out_msg
-set_directive_interface -mode ap_none Uart_rx_operations parity
-set_directive_interface -mode ap_none Uart_rx_operations first_stop_bit
+set_directive_interface -mode ap_none Uart_rx_operations wait_framing_break
+set_directive_interface -mode ap_none Uart_rx_operations events_out_msg
 set_directive_interface -mode ap_none Uart_rx_operations suspending_count
+set_directive_interface -mode ap_none Uart_rx_operations first_stop_bit
 set_directive_allocation -limit 1 -type function Uart_rx_operations parity_not_correct
 set_directive_allocation -limit 1 -type function Uart_rx_operations update_data

@@ -6,10 +6,10 @@ use work.Uart_rx_types.all;
 
 entity Uart_rx_module is
 port(
-	data_out_sync_sig: in std_logic;
-	config_in_sig: in config_t;
 	rxd_sig: in std_logic;
 	control_active_in_sig: in std_logic;
+	data_out_sync_sig: in std_logic;
+	config_in_sig: in config_t;
 	data_out_sig: out data_t;
 	events_out_sig: out rx_events_t;
 	events_out_notify: out std_logic;
@@ -23,13 +23,13 @@ end Uart_rx_module;
 architecture Uart_rx_arch of Uart_rx_module is
 
 	-- Internal Registers
-	signal wait_framing_break: std_logic;
-	signal events_out_msg: rx_events_t;
+	signal parity: std_logic;
 	signal timeout: std_logic;
 	signal data_out_msg: data_t;
-	signal parity: std_logic;
-	signal first_stop_bit: std_logic;
+	signal wait_framing_break: std_logic;
+	signal events_out_msg: rx_events_t;
 	signal suspending_count: std_logic_vector(31 downto 0);
+	signal first_stop_bit: std_logic;
 
 	-- Operation Module Inputs
 	signal rxd_sig_in: std_logic;
@@ -74,16 +74,16 @@ architecture Uart_rx_arch of Uart_rx_module is
 		events_out_sig_error_src_V: out std_logic_vector(31 downto 0);
 		events_out_sig_timeout: out std_logic;
 		events_out_sig_ready: out std_logic;
+		parity: out std_logic;
 		data_out_msg_valid: out std_logic;
-		events_out_msg_ready: out std_logic;
-		wait_framing_break: out std_logic;
-		events_out_msg_error_src_V: out std_logic_vector(31 downto 0);
 		timeout: out std_logic;
 		data_out_msg_data_V: out std_logic_vector(31 downto 0);
-		parity: out std_logic;
-		first_stop_bit: out std_logic;
+		wait_framing_break: out std_logic;
+		events_out_msg_ready: out std_logic;
 		events_out_msg_timeout: out std_logic;
+		events_out_msg_error_src_V: out std_logic_vector(31 downto 0);
 		suspending_count_V: out std_logic_vector(31 downto 0);
+		first_stop_bit: out std_logic;
 		events_out_notify: out std_logic;
 		rxd_notify: out std_logic;
 		active_operation: in std_logic_vector(5 downto 0)
@@ -100,23 +100,23 @@ begin
 		events_out_sig_error_src_V => events_out_sig_error_src_out,
 		events_out_sig_timeout => events_out_sig_timeout_out,
 		events_out_sig_ready => events_out_sig_ready_out,
+		parity => parity,
 		data_out_msg_valid => data_out_msg.valid,
-		events_out_msg_ready => events_out_msg.ready,
-		wait_framing_break => wait_framing_break,
-		events_out_msg_error_src_V => events_out_msg.error_src,
 		timeout => timeout,
 		data_out_msg_data_V => data_out_msg.data,
-		parity => parity,
-		first_stop_bit => first_stop_bit,
+		wait_framing_break => wait_framing_break,
+		events_out_msg_ready => events_out_msg.ready,
 		events_out_msg_timeout => events_out_msg.timeout,
+		events_out_msg_error_src_V => events_out_msg.error_src,
 		suspending_count_V => suspending_count,
+		first_stop_bit => first_stop_bit,
 		events_out_notify => events_out_notify_out,
 		rxd_notify => rxd_notify_out,
 		active_operation => active_operation_in
 	);
 
 	-- Monitor
-	process (active_state, rxd_sync, data_out_sync_sig, config_in_sig.parity, rxd_sig, control_active_in_sig, config_in_sig.two_stop_bits, config_in_sig.odd_parity, data_out_msg.valid, wait_framing_break, timeout, data_out_msg.data, parity, first_stop_bit, suspending_count)
+	process (active_state, rxd_sync, rxd_sig, control_active_in_sig, data_out_sync_sig, config_in_sig.parity, config_in_sig.odd_parity, config_in_sig.two_stop_bits, parity, data_out_msg.valid, timeout, data_out_msg.data, wait_framing_break, suspending_count, first_stop_bit)
 	begin
 		case active_state is
 		when st_IDLE_1 =>
@@ -154,25 +154,25 @@ begin
 				active_operation <= op_IDLE_1_17;
 				next_state <= st_IDLE_1;
 			elsif (not(rxd_sync) and control_active_in_sig and data_out_sync_sig) = '1' then 
-				active_operation <= op_IDLE_1_33;
-				next_state <= st_IDLE_1;
-			elsif (not(rxd_sync) and control_active_in_sig and not(data_out_sync_sig)) = '1' then 
 				active_operation <= op_IDLE_1_36;
 				next_state <= st_IDLE_1;
+			elsif (not(rxd_sync) and control_active_in_sig and not(data_out_sync_sig)) = '1' then 
+				active_operation <= op_IDLE_1_39;
+				next_state <= st_IDLE_1;
 			elsif (not(rxd_sync) and not(timeout) and not(control_active_in_sig) and data_out_sync_sig and bool_to_sl(x"00000027" <= (x"00000001" + unsigned(suspending_count)))) = '1' then 
-				active_operation <= op_IDLE_1_40;
+				active_operation <= op_IDLE_1_43;
 				next_state <= st_IDLE_1;
 			elsif (not(rxd_sync) and not(timeout) and not(control_active_in_sig) and data_out_sync_sig and not(bool_to_sl(x"00000027" <= (x"00000001" + unsigned(suspending_count))))) = '1' then 
-				active_operation <= op_IDLE_1_41;
-				next_state <= st_IDLE_1;
-			elsif (not(rxd_sync) and not(timeout) and not(control_active_in_sig) and not(data_out_sync_sig) and bool_to_sl(x"00000027" <= (x"00000001" + unsigned(suspending_count)))) = '1' then 
 				active_operation <= op_IDLE_1_44;
 				next_state <= st_IDLE_1;
+			elsif (not(rxd_sync) and not(timeout) and not(control_active_in_sig) and not(data_out_sync_sig) and bool_to_sl(x"00000027" <= (x"00000001" + unsigned(suspending_count)))) = '1' then 
+				active_operation <= op_IDLE_1_47;
+				next_state <= st_IDLE_1;
 			elsif (not(rxd_sync) and not(timeout) and not(control_active_in_sig) and not(data_out_sync_sig) and not(bool_to_sl(x"00000027" <= (x"00000001" + unsigned(suspending_count))))) = '1' then 
-				active_operation <= op_IDLE_1_45;
+				active_operation <= op_IDLE_1_48;
 				next_state <= st_IDLE_1;
 			else
-				active_operation <= op_IDLE_1_49;
+				active_operation <= op_IDLE_1_52;
 				next_state <= st_IDLE_1;
 			end if;
 		when st_GET_BIT_ZERO_2 =>
@@ -260,16 +260,25 @@ begin
 			elsif (rxd_sync and not(rxd_sig) and not(config_in_sig.two_stop_bits)) = '1' then 
 				active_operation <= op_GET_STOP_BIT_11_30;
 				next_state <= st_IDLE_1;
+			elsif (rxd_sync and rxd_sig and config_in_sig.two_stop_bits) = '1' then 
+				active_operation <= op_GET_STOP_BIT_11_31;
+				next_state <= st_GET_STOP_BIT_SECOND_12;
+			elsif (rxd_sync and rxd_sig and not(config_in_sig.two_stop_bits)) = '1' then 
+				active_operation <= op_GET_STOP_BIT_11_32;
+				next_state <= st_IDLE_1;
 			else
 				active_operation <= op_state_wait;
 				next_state <= active_state;
 			end if;
 		when st_GET_STOP_BIT_SECOND_12 =>
 			if (rxd_sync and not(parity) and not(first_stop_bit) and not(rxd_sig) and bool_to_sl(data_out_msg.data = x"00000000")) = '1' then 
-				active_operation <= op_GET_STOP_BIT_SECOND_12_31;
+				active_operation <= op_GET_STOP_BIT_SECOND_12_33;
 				next_state <= st_IDLE_1;
 			elsif (rxd_sync and not(((not(parity) and not(first_stop_bit)) and bool_to_sl(data_out_msg.data = x"00000000"))) and not(rxd_sig)) = '1' then 
-				active_operation <= op_GET_STOP_BIT_SECOND_12_32;
+				active_operation <= op_GET_STOP_BIT_SECOND_12_34;
+				next_state <= st_IDLE_1;
+			elsif (rxd_sync and rxd_sig) = '1' then 
+				active_operation <= op_GET_STOP_BIT_SECOND_12_35;
 				next_state <= st_IDLE_1;
 			else
 				active_operation <= op_state_wait;
