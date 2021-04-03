@@ -1,0 +1,4 @@
+This is an example for a simple Adding operation written in C++ code. The C++ code was divided into 3 different code files namely x_notify.vhd, z_notify.vhd and z_sig.vhd. They were created from theri C++ counterparts. 
+This C++ code used return for declaring the output in the VHDL code. The properties and the wrapper were successful.
+
+The contents are the properties to verify the VHDL files and the C++ files which generated the VHDL files

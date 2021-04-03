@@ -1,0 +1,14 @@
+This is an example for Bus example written in C++ code. The VHDL code was generated They were created from its C++ counterpart. 
+This C++ code used the '*' sign for declaring the output in the VHDL code. The properties and the wrapper were unsuccessful. Although the wrapper was written so that the whole operation take 3 clk cycles
+In the C++ folder you will find both the bambu C++ file used as an input and the vivado geenrated C++ file
+
+The main problems and their attemplted solutios were:
+
+1. Bambu seems to struggle with structs that's why we disantled a struct to its basic data types
+2. Bambu seems to struggle with enum data types when the output of the C++ code is of enum type, it struggles in translating it, which is why we replaced the enum data type with a normal data type
+3. Tried both the * and & symbols to indicate the output of the C++ file for bambu but it didn't work in both times
+4. The properties were able to hold for the first ten of them but without the req.trans_type
+5. Additional problem would be the resp.ack signal
+
+
+The contents are the properties to verify the VHDL files and the C++ files which generated the VHDL files

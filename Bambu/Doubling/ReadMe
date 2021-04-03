@@ -1,0 +1,4 @@
+This is an example for doubling operation written in C++ code. The VHDL code was generated They were created from its C++ counterpart. 
+This C++ code used the '*' sign for declaring the output in the VHDL code. The properties and the wrapper were successful. Although the wrapper was written so that the whole operation take 3 clk cycles
+
+The contents are the properties to verify the VHDL files and the C++ files which generated the VHDL files
